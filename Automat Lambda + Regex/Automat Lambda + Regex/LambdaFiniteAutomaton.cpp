@@ -3,8 +3,9 @@
 #include <fstream>
 #include <format>
 #include <stack>
+#include <ranges>
 
-const char LAMBDA = '\'';
+const char LAMBDA = '$';
 
 // Validarea corectitudinii automatului
 bool LambdaFiniteAutomaton::VerifyAutomaton() const
@@ -12,12 +13,8 @@ bool LambdaFiniteAutomaton::VerifyAutomaton() const
 	if (Q.empty() || Sigma.empty() || q0.empty() || F.empty() || Delta.empty())
 		return false;
 
-	// Verifica daca F este inclus în Q
-	if (Q.find(F) == Q.end())
-		return false;
-
-	// Verifica daca q0 este inclus în Q
-	if (Q.find(q0) == Q.end())
+	// Verifica daca F si q0 sunt incluse în Q
+	if (Q.find(F) == Q.end() || Q.find(q0) == Q.end())
 		return false;
 
 	// Verifica daca tranzitiile sunt valide
@@ -26,7 +23,7 @@ bool LambdaFiniteAutomaton::VerifyAutomaton() const
 		const Transition& transition = transitionList.first;
 		if (Q.find(transition.state) == Q.end())
 			return false;
-		if (Sigma.find(transition.symbol) == Sigma.end())
+		if (transition.symbol != LAMBDA && Sigma.find(transition.symbol) == Sigma.end())
 			return false;
 		for (const auto& state : transitionList.second)
 			if (Q.find(state) == Q.end())
@@ -67,54 +64,6 @@ void LambdaFiniteAutomaton::PrintAutomaton(std::ostream& os) const
 	os << "q0:\t" << q0 << '\n';
 
 	os << "F:\t" << F << '\n';
-}
-
-// Validarea unui cuvant pentru orice tip de automat (AFD sau AFN)
-bool LambdaFiniteAutomaton::CheckWord(const std::string& word) const
-{
-	return true;
-	// TODO
-}
-
-// Validarea unui cuvant pentru un automat finit nedeterminist (AFN)
-bool LambdaFiniteAutomaton::CheckWordNFA(std::string word) const
-{
-	// Starile posibile curente,incepand cu starea initiala
-	std::vector<std::string> possibleStates{ q0 };
-
-	// Parcurgem cuvantul si starile posibile curente pana cand cuvantul este vid sau nu mai exista stari posibile
-	while (!word.empty() && !possibleStates.empty())
-	{
-		// Starile posibile noi pentru urmatoarea litera din cuvant
-		std::vector<std::string> newPossibleStates;
-
-		// Iteram prin fiecare stare posibila curenta
-		for (const auto& state : possibleStates)
-		{
-			// Gasim tranzitia pentru perechea (stare curenta, caracter curent)
-			auto iterator = Delta.find({ state, word[0] });
-			// Daca tranzitia exista, adaugam noile stari posibile
-			if (iterator != Delta.end())
-				for (const auto& newState : iterator->second)
-					newPossibleStates.push_back(newState);
-		}
-		// Actualizam starile posibile curente cu noile stari posibile
-		possibleStates = std::move(newPossibleStates);
-		// Stergem prima litera din cuvant
-		word.erase(0, 1);
-	}
-
-	// Daca cuvantul nu a fost sters complet, acesta nu este acceptat
-	if (word.size() != 0)
-		return false;
-
-	// Verificam daca exista cel putin o stare posibila curenta care este stare finala
-	for (const auto& state : possibleStates)
-		if (state == F)
-			return true;
-
-	// Daca nu exista nicio stare finala in starile posibile curente, cuvantul nu este acceptat
-	return false;
 }
 
 // Citirea automatului dintr-un fisier
@@ -166,9 +115,9 @@ bool LambdaFiniteAutomaton::operator!() const
 	return false;
 }
 
+// DFS pe graful automatului
 std::vector<std::string> LambdaFiniteAutomaton::LambdaEnclosing(const std::string& state) const
 {
-	// DFS
 	std::unordered_map<std::string, bool> visited;
 	std::vector<std::string> enclosing;
 	std::stack<std::string> statesStack;
@@ -177,9 +126,24 @@ std::vector<std::string> LambdaFiniteAutomaton::LambdaEnclosing(const std::strin
 	statesStack.push(state);
 	do
 	{
+		std::string currentState = statesStack.top();
+		statesStack.pop();
+		enclosing.push_back(currentState);
 
-	} while (!enclosing.empty());
-	return {};
+		auto lambdaTransitions = Delta
+			| std::views::filter([&currentState](const auto& transition) {
+			return transition.first.state == currentState && transition.first.symbol == LAMBDA; });
+
+		for (const auto& transitionList : lambdaTransitions)
+			for (const auto& newState : transitionList.second)
+				if (!visited[newState])
+				{
+					visited[newState] = true;
+					statesStack.push(newState);
+				}
+
+	} while (!statesStack.empty());
+	return enclosing;
 }
 
 std::ostream& operator<<(std::ostream& os, const LambdaFiniteAutomaton& automaton)

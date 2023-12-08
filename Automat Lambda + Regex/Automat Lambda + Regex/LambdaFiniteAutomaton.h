@@ -24,8 +24,6 @@ class LambdaFiniteAutomaton
 public:
 	bool VerifyAutomaton() const;
 	void PrintAutomaton(std::ostream& os = std::cout) const;
-	bool CheckWord(const std::string& word) const;
-	bool CheckWordNFA(std::string word) const;
 
 public:
 	void ReadAutomaton(std::istream& is = std::cin);
