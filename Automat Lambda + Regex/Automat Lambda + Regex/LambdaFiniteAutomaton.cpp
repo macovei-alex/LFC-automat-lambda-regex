@@ -107,6 +107,12 @@ void LambdaFiniteAutomaton::ReadAutomaton(std::istream& is)
 	is >> F;
 }
 
+void LambdaFiniteAutomaton::ReadAutomaton(const std::string& fileName)
+{
+	std::ifstream fin(fileName);
+	ReadAutomaton(fin);
+}
+
 bool LambdaFiniteAutomaton::operator!() const
 {
 	if (Q.empty() || Sigma.empty() || q0.empty() || F.empty() || Delta.empty())
@@ -225,17 +231,4 @@ const std::string& LambdaFiniteAutomaton::GetF() const
 void LambdaFiniteAutomaton::SetF(const std::string& F)
 {
 	this->F = F;
-}
-
-// Suprascrierea operatorului '<' pentru a permite sortarea obiectelor de tip Transition
-bool Transition::operator<(const Transition& other) const
-{
-	if (state != other.state)
-		return state < other.state;
-	return symbol < other.symbol;
-}
-
-std::size_t Transition::Hash::operator()(const Transition& transition) const
-{
-	return std::hash<std::string>()(transition.state + transition.symbol);
 }

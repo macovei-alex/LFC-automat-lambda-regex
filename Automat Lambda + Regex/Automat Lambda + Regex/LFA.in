@@ -26,4 +26,4 @@ q12 $ q15
 q0
 q15
 
-// ab(ac|bc)*b(a)*
+// Expresia regulata echivalenta: ab(ac|bc)*b(a)*

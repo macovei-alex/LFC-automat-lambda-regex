@@ -134,13 +134,18 @@
     <ClCompile Include="DeterministicFiniteAutomaton.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="LambdaFiniteAutomaton.cpp" />
-    <Text Include="automaton.in">
+    <ClCompile Include="Transition.cpp" />
+    <Text Include="LFA.in">
       <FileType>Document</FileType>
     </Text>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DeterministicFiniteAutomaton.h" />
     <ClInclude Include="LambdaFiniteAutomaton.h" />
+    <ClInclude Include="Transition.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DFA.in" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

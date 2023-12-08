@@ -4,20 +4,7 @@
 #include <string>
 #include <iostream>
 
-struct Transition
-{
-	std::string state;
-	char symbol;
-
-	Transition& operator=(const Transition& other) = default;
-	bool operator<(const Transition& other) const;
-	bool operator==(const Transition& other) const = default;
-
-	struct Hash
-	{
-		std::size_t operator()(const Transition& transition) const;
-	};
-};
+#include "Transition.h"
 
 class LambdaFiniteAutomaton
 {
@@ -27,6 +14,7 @@ public:
 
 public:
 	void ReadAutomaton(std::istream& is = std::cin);
+	void ReadAutomaton(const std::string& fileName);
 	bool operator!() const;
 	std::vector<std::string> LambdaEnclosing(const std::string& state) const;
 

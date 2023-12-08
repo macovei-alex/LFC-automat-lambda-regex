@@ -2,21 +2,34 @@
 #include <fstream>
 
 #include "LambdaFiniteAutomaton.h"
+#include "DeterministicFiniteAutomaton.h"
+
+using LFA = class LambdaFiniteAutomaton;
+using DFA = class DeterministicFiniteAutomaton;
 
 void main()
 {
-	LambdaFiniteAutomaton automat;
-	std::ifstream fin("automaton.in");
-	automat.ReadAutomaton(fin);
-	automat.PrintAutomaton();
+	LFA lfa;
 
-	std::cout << std::boolalpha << automat.VerifyAutomaton() << '\n';
+	lfa.ReadAutomaton("LFA.in");
+	lfa.PrintAutomaton();
 
-	for (const auto& state : automat.GetQ())
+	std::cout << "Automat corect: " << std::boolalpha << lfa.VerifyAutomaton() << '\n';
+
+	for (const auto& state : lfa.GetQ())
 	{
 		std::cout << state << ": ";
-		for (const auto& enclosingState : automat.LambdaEnclosing(state))
+		for (const auto& enclosingState : lfa.LambdaEnclosing(state))
 			std::cout << enclosingState << ' ';
 		std::cout << '\n';
 	}
+
+	std::cout << "\n\n\n";
+
+	DFA dfa;
+
+	dfa.ReadAutomaton("DFA.in");
+	dfa.PrintAutomaton();
+
+	std::cout << "Automat corect: " << std::boolalpha << dfa.VerifyAutomaton() << '\n';
 }

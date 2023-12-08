@@ -24,6 +24,9 @@
     <ClCompile Include="DeterministicFiniteAutomaton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Transition.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambdaFiniteAutomaton.h">
@@ -32,10 +35,18 @@
     <ClInclude Include="DeterministicFiniteAutomaton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Transition.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="automaton.in">
+    <Text Include="LFA.in">
       <Filter>Resource Files</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DFA.in">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
