@@ -133,7 +133,9 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="LambdaFiniteAutomaton.cpp" />
-    <ClCompile Include="automaton.in" />
+    <Text Include="automaton.in">
+      <FileType>Document</FileType>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambdaFiniteAutomaton.h" />

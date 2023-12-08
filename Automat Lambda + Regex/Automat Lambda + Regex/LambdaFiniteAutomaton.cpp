@@ -2,7 +2,9 @@
 
 #include <fstream>
 #include <format>
-#include <ranges>
+#include <stack>
+
+const char LAMBDA = '\'';
 
 // Validarea corectitudinii automatului
 bool LambdaFiniteAutomaton::VerifyAutomaton() const
@@ -19,13 +21,14 @@ bool LambdaFiniteAutomaton::VerifyAutomaton() const
 		return false;
 
 	// Verifica daca tranzitiile sunt valide
-	for (const auto& transition : Delta)
+	for (const auto& transitionList : Delta)
 	{
-		if (Q.find(transition.first.state) == Q.end())
+		const Transition& transition = transitionList.first;
+		if (Q.find(transition.state) == Q.end())
 			return false;
-		if (Sigma.find(transition.first.symbol) == Sigma.end())
+		if (Sigma.find(transition.symbol) == Sigma.end())
 			return false;
-		for (const auto& state : transition.second)
+		for (const auto& state : transitionList.second)
 			if (Q.find(state) == Q.end())
 				return false;
 	}
@@ -38,10 +41,10 @@ bool LambdaFiniteAutomaton::VerifyAutomaton() const
 			transitionWithS = true;
 			break;
 		}
-	if (transitionWithS)
-		return true;
+	if (!transitionWithS)
+		return false;
 
-	return false;
+	return true;
 }
 
 void LambdaFiniteAutomaton::PrintAutomaton(std::ostream& os) const
@@ -70,43 +73,7 @@ void LambdaFiniteAutomaton::PrintAutomaton(std::ostream& os) const
 bool LambdaFiniteAutomaton::CheckWord(const std::string& word) const
 {
 	return true;
-}
-
-// Validarea unui cuvant pentru un automat finit determinist (AFD)
-bool LambdaFiniteAutomaton::CheckWordDFA(std::string word) const
-{
-	// Se incepe cu starea initiala
-	std::string currentState{ q0 };
-
-	// Se parcurge cuvantul caracter cu caracter
-	while (!word.empty() && !currentState.empty())
-	{
-		// Se cauta tranzitia pentru starea curenta si caracterul curent
-		auto iterator = Delta.find({ currentState, word[0] });
-
-		// Daca tranzitia exista
-		if (iterator != Delta.end())
-		{
-			// Se actualizeazastarea curenta cu starea destinatie a tranzitiei
-			currentState = iterator->second[0];
-
-			// Se elimina primul caracter din cuvant
-			word.erase(0, 1);
-		}
-		else
-			// Daca nu exista tranzitie, se marcheaza starea curenta ca vida
-			currentState.clear();
-	}
-
-	// Daca cuvantul s-a terminat si starea curenta este una finala, atunci cuvantul este acceptat
-	if (word.size() != 0)
-		return false;
-
-	if (currentState == F)
-		return true;
-
-	// Altfel, cuvantul nu este acceptat
-	return false;
+	// TODO
 }
 
 // Validarea unui cuvant pentru un automat finit nedeterminist (AFN)
@@ -199,6 +166,22 @@ bool LambdaFiniteAutomaton::operator!() const
 	return false;
 }
 
+std::vector<std::string> LambdaFiniteAutomaton::LambdaEnclosing(const std::string& state) const
+{
+	// DFS
+	std::unordered_map<std::string, bool> visited;
+	std::vector<std::string> enclosing;
+	std::stack<std::string> statesStack;
+
+	visited[state] = true;
+	statesStack.push(state);
+	do
+	{
+
+	} while (!enclosing.empty());
+	return {};
+}
+
 std::ostream& operator<<(std::ostream& os, const LambdaFiniteAutomaton& automaton)
 {
 	automaton.PrintAutomaton(os);
@@ -242,12 +225,12 @@ void LambdaFiniteAutomaton::InsertIntoSigma(char symbol)
 	this->Sigma.insert(symbol);
 }
 
-const std::unordered_map<Transition, std::vector<std::string>>& LambdaFiniteAutomaton::GetDelta() const
+const std::unordered_map<Transition, std::vector<std::string>, Transition::Hash>& LambdaFiniteAutomaton::GetDelta() const
 {
 	return this->Delta;
 }
 
-void LambdaFiniteAutomaton::SetDelta(const std::unordered_map<Transition, std::vector<std::string>>& Delta)
+void LambdaFiniteAutomaton::SetDelta(const std::unordered_map<Transition, std::vector<std::string>, Transition::Hash>& Delta)
 {
 	this->Delta = Delta;
 }
@@ -282,10 +265,15 @@ void LambdaFiniteAutomaton::SetF(const std::string& F)
 	this->F = F;
 }
 
-// Suprascrierea operatorului '<' pentru a permite sortarea obiectelor de tip Tranzitie
+// Suprascrierea operatorului '<' pentru a permite sortarea obiectelor de tip Transition
 bool Transition::operator<(const Transition& other) const
 {
 	if (state != other.state)
 		return state < other.state;
 	return symbol < other.symbol;
+}
+
+std::size_t Transition::Hash::operator()(const Transition& transition) const
+{
+	return std::hash<std::string>()(transition.state + transition.symbol);
 }

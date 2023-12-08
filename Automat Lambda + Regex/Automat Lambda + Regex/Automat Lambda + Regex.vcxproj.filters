@@ -21,13 +21,15 @@
     <ClCompile Include="LambdaFiniteAutomaton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="automaton.in">
-      <Filter>Resource Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambdaFiniteAutomaton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="automaton.in">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>
