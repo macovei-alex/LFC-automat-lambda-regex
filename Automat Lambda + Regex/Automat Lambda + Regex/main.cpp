@@ -3,6 +3,7 @@
 
 #include "LambdaFiniteAutomaton.h"
 #include "DeterministicFiniteAutomaton.h"
+#include "Algorithms.h"
 
 using LFA = class LambdaFiniteAutomaton;
 using DFA = class DeterministicFiniteAutomaton;
@@ -38,4 +39,8 @@ void main()
 	std::cout << std::boolalpha << dfa.CheckWord("abaa") << '\n';
 	std::cout << std::boolalpha << dfa.CheckWord("abacbcba") << '\n';
 	std::cout << std::boolalpha << dfa.CheckWord("abbc") << '\n';
+
+	dfa = Algorithms::DFAfromLFA(lfa);
+	std::cout << "\n\n";
+	dfa.PrintAutomaton();
 }

@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <format>
+#include <algorithm>
 
 // Validarea corectitudinii automatului
 bool DeterministicFiniteAutomaton::VerifyAutomaton() const

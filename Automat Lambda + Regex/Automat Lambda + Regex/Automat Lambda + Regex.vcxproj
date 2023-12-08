@@ -131,6 +131,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Algorithms.cpp" />
     <ClCompile Include="DeterministicFiniteAutomaton.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="LambdaFiniteAutomaton.cpp" />
@@ -140,6 +141,7 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Algorithms.h" />
     <ClInclude Include="DeterministicFiniteAutomaton.h" />
     <ClInclude Include="LambdaFiniteAutomaton.h" />
     <ClInclude Include="Transition.h" />
