@@ -3,7 +3,6 @@
 #include <fstream>
 #include <format>
 #include <stack>
-#include <ranges>
 
 const char LAMBDA = '$';
 
@@ -130,17 +129,16 @@ std::vector<std::string> LambdaFiniteAutomaton::LambdaEnclosing(const std::strin
 		statesStack.pop();
 		enclosing.push_back(currentState);
 
-		auto lambdaTransitions = Delta
-			| std::views::filter([&currentState](const auto& transition) {
-			return transition.first.state == currentState && transition.first.symbol == LAMBDA; });
+		auto currentLambdaStates = Delta.find(Transition{ currentState, LAMBDA });
+		if (currentLambdaStates == Delta.end())
+			continue;
 
-		for (const auto& transitionList : lambdaTransitions)
-			for (const auto& newState : transitionList.second)
-				if (!visited[newState])
-				{
-					visited[newState] = true;
-					statesStack.push(newState);
-				}
+		for (const auto& newState : currentLambdaStates->second)
+			if (!visited[newState])
+			{
+				visited[newState] = true;
+				statesStack.push(newState);
+			}
 
 	} while (!statesStack.empty());
 	return enclosing;

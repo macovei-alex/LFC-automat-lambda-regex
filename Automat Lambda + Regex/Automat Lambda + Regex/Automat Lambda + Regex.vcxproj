@@ -131,6 +131,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DeterministicFiniteAutomaton.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="LambdaFiniteAutomaton.cpp" />
     <Text Include="automaton.in">
@@ -138,6 +139,7 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DeterministicFiniteAutomaton.h" />
     <ClInclude Include="LambdaFiniteAutomaton.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
