@@ -3,17 +3,20 @@
 #include <fstream>
 #include <format>
 
-const char LAMBDA = '$';
-
 // Validarea corectitudinii automatului
 bool DeterministicFiniteAutomaton::VerifyAutomaton() const
 {
 	if (Q.empty() || Sigma.empty() || q0.empty() || F.empty() || Delta.empty())
 		return false;
 
-	// Verifica daca F si q0 sunt incluse în Q
-	if (Q.find(F) == Q.end() || Q.find(q0) == Q.end())
+	// Verifica daca q0este inclusa in Q
+	if (Q.find(q0) == Q.end())
 		return false;
+
+	// Verifica daca F este inclusa in Q
+	for (const auto& state : F)
+		if (Q.find(state) == Q.end())
+			return false;
 
 	// Verifica daca tranzitiile sunt valide
 	for (const auto& transitionProduction : Delta)
@@ -23,7 +26,7 @@ bool DeterministicFiniteAutomaton::VerifyAutomaton() const
 			return false;
 		if (Q.find(transitionProduction.second) == Q.end())
 			return false;
-		if (transition.symbol != LAMBDA && Sigma.find(transition.symbol) == Sigma.end())
+		if (Sigma.find(transition.symbol) == Sigma.end())
 			return false;
 	}
 
@@ -59,7 +62,31 @@ void DeterministicFiniteAutomaton::PrintAutomaton(std::ostream& os) const
 
 	os << "q0:\t" << q0 << '\n';
 
-	os << "F:\t" << F << '\n';
+	os << "F:\t";
+	for (const auto& state : F)
+		os << state << ' ';
+	os << '\n';
+}
+
+bool DeterministicFiniteAutomaton::CheckWord(const std::string& word) const
+{
+	std::string wordCopy{ word };
+	std::string currentState{ q0 };
+	while (!wordCopy.empty())
+	{
+		char symbol = wordCopy[0];
+		wordCopy.erase(0, 1);
+		if (Sigma.find(symbol) == Sigma.end())
+			return false;
+		auto found = Delta.find({ currentState, symbol });
+		if (found == Delta.end())
+			return false;
+		currentState = found->second;
+	}
+	if (F.find(currentState) == F.end())
+		return false;
+
+	return true;
 }
 
 // Citirea automatului dintr-un fisier
@@ -100,8 +127,15 @@ void DeterministicFiniteAutomaton::ReadAutomaton(std::istream& is)
 	// Citirea starii initiale (q0)
 	is >> q0;
 
+	is >> n;
+
 	// Citirea starii finale (F)
-	is >> F;
+	for (size_t i = 0; i < n; i++)
+	{
+		std::string state;
+		is >> state;
+		F.insert(state);
+	}
 }
 
 void DeterministicFiniteAutomaton::ReadAutomaton(const std::string& fileName)
@@ -185,12 +219,12 @@ void DeterministicFiniteAutomaton::SetQ0(const std::string& q0)
 	this->q0 = q0;
 }
 
-const std::string& DeterministicFiniteAutomaton::GetF() const
+const std::unordered_set<std::string>& DeterministicFiniteAutomaton::GetF() const
 {
 	return this->F;
 }
 
-void DeterministicFiniteAutomaton::SetF(const std::string& F)
+void DeterministicFiniteAutomaton::SetF(const std::unordered_set<std::string>& F)
 {
 	this->F = F;
 }

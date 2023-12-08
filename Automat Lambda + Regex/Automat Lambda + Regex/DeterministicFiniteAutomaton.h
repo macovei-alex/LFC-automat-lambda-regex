@@ -11,6 +11,7 @@ class DeterministicFiniteAutomaton
 public:
 	bool VerifyAutomaton() const;
 	void PrintAutomaton(std::ostream& os = std::cout) const;
+	bool CheckWord(const std::string& word) const;
 
 public:
 	void ReadAutomaton(std::istream& is = std::cin);
@@ -38,15 +39,15 @@ public:
 	const std::string& GetQ0() const;
 	void SetQ0(const std::string& q0);
 
-	const std::string& GetF() const;
-	void SetF(const std::string& F);
+	const std::unordered_set<std::string>& GetF() const;
+	void SetF(const std::unordered_set<std::string>& F);
 
 private:
 	std::unordered_set<std::string> Q;
 	std::unordered_set<char> Sigma;
 	std::unordered_map<Transition, std::string, Transition::Hash> Delta;
 	std::string q0;
-	std::string F;
+	std::unordered_set<std::string> F;
 };
 
 std::ostream& operator<<(std::ostream& os, const DeterministicFiniteAutomaton& automaton);

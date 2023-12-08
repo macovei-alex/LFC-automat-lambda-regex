@@ -32,4 +32,10 @@ void main()
 	dfa.PrintAutomaton();
 
 	std::cout << "Automat corect: " << std::boolalpha << dfa.VerifyAutomaton() << '\n';
+
+	std::cout << std::boolalpha << dfa.CheckWord("abbaa") << '\n';
+	std::cout << std::boolalpha << dfa.CheckWord("abbaaaa") << '\n';
+	std::cout << std::boolalpha << dfa.CheckWord("abaa") << '\n';
+	std::cout << std::boolalpha << dfa.CheckWord("abacbcba") << '\n';
+	std::cout << std::boolalpha << dfa.CheckWord("abbc") << '\n';
 }
