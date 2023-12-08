@@ -1,210 +1,203 @@
-//#include "DeterministicFiniteAutomaton.h"
-//
-//#include <fstream>
-//#include <format>
-//
-//const char LAMBDA = '$';
-//
-//// Validarea corectitudinii automatului
-//bool DeterministicFiniteAutomaton::VerifyAutomaton() const
-//{
-//	if (Q.empty() || Sigma.empty() || q0.empty() || F.empty() || Delta.empty())
-//		return false;
-//
-//	// Verifica daca F si q0 sunt incluse în Q
-//	if (Q.find(F) == Q.end() || Q.find(q0) == Q.end())
-//		return false;
-//
-//	// Verifica daca tranzitiile sunt valide
-//	for (const auto& transitionList : Delta)
-//	{
-//		const Transition& transition = transitionList.first;
-//		if (Q.find(transition.state) == Q.end())
-//			return false;
-//		if (transition.symbol != LAMBDA && Sigma.find(transition.symbol) == Sigma.end())
-//			return false;
-//		for (const auto& state : transitionList.second)
-//			if (Q.find(state) == Q.end())
-//				return false;
-//	}
-//
-//	// Exista minim 1 tranzitie care contine starea intiaiala
-//	bool transitionWithS = false;
-//	for (const char& caracter : Sigma)
-//		if (Delta.find({ q0, caracter }) != Delta.end())
-//		{
-//			transitionWithS = true;
-//			break;
-//		}
-//	if (!transitionWithS)
-//		return false;
-//
-//	return true;
-//}
-//
-//void DeterministicFiniteAutomaton::PrintAutomaton(std::ostream& os) const
-//{
-//	os << "Q:\t";
-//	for (const auto& state : Q)
-//		os << state << ' ';
-//	os << '\n';
-//
-//	os << "Sigma:\t";
-//	for (const auto& symbol : Sigma)
-//		os << symbol << ' ';
-//	os << '\n';
-//
-//	os << "Delta:";
-//	for (const auto& transition : Delta)
-//		for (const auto& stare : transition.second)
-//			os << std::format("\t({}, {}) -> {}\n", transition.first.state, transition.first.symbol, stare);
-//
-//	os << "q0:\t" << q0 << '\n';
-//
-//	os << "F:\t" << F << '\n';
-//}
-//
-//// Citirea automatului dintr-un fisier
-//void DeterministicFiniteAutomaton::ReadAutomaton(std::istream& is)
-//{
-//	int n;
-//	is >> n;
-//
-//	// Citirea starilor (Q)
-//	for (int i = 0; i < n; i++)
-//	{
-//		std::string state;
-//		is >> state;
-//		Q.insert(state);
-//	}
-//
-//	is >> n;
-//
-//	// Citirea alfabetului (Sigma)
-//	for (int i = 0; i < n; i++)
-//	{
-//		char symbol;
-//		is >> symbol;
-//		Sigma.insert(symbol);
-//	}
-//
-//	// Citirea tranzitiilor (Delta)
-//	is >> n;
-//	for (int i = 0; i < n; i++)
-//	{
-//		Transition transition;
-//		is >> transition.state >> transition.symbol;
-//		std::string newState;
-//		is >> newState;
-//		Delta[transition].push_back(newState);
-//	}
-//
-//	// Citirea starii initiale (q0)
-//	is >> q0;
-//
-//	// Citirea starii finale (F)
-//	is >> F;
-//}
-//
-//bool DeterministicFiniteAutomaton::operator!() const
-//{
-//	if (Q.empty() || Sigma.empty() || q0.empty() || F.empty() || Delta.empty())
-//		return true;
-//	return false;
-//}
-//
-//std::ostream& operator<<(std::ostream& os, const DeterministicFiniteAutomaton& automaton)
-//{
-//	automaton.PrintAutomaton(os);
-//	return os;
-//}
-//
-//std::istream& operator>>(std::istream& is, DeterministicFiniteAutomaton& automaton)
-//{
-//	automaton.ReadAutomaton(is);
-//	return is;
-//}
-//
-//// Obtinerea multimii starilor (Q)
-//const std::unordered_set<std::string>& DeterministicFiniteAutomaton::GetQ() const
-//{
-//	return this->Q;
-//}
-//
-//void DeterministicFiniteAutomaton::SetQ(const std::unordered_set<std::string>& Q)
-//{
-//	this->Q = Q;
-//}
-//
-//void DeterministicFiniteAutomaton::InsertIntoQ(const std::string& state)
-//{
-//	this->Q.insert(state);
-//}
-//
-//const std::unordered_set<char>& DeterministicFiniteAutomaton::GetSigma() const
-//{
-//	return this->Sigma;
-//}
-//
-//void DeterministicFiniteAutomaton::SetSigma(const std::unordered_set<char>& Sigma)
-//{
-//	this->Sigma = Sigma;
-//}
-//
-//void DeterministicFiniteAutomaton::InsertIntoSigma(char symbol)
-//{
-//	this->Sigma.insert(symbol);
-//}
-//
-//const std::unordered_map<Transition, std::vector<std::string>, Transition::Hash>& DeterministicFiniteAutomaton::GetDelta() const
-//{
-//	return this->Delta;
-//}
-//
-//void DeterministicFiniteAutomaton::SetDelta(const std::unordered_map<Transition, std::vector<std::string>, Transition::Hash>& Delta)
-//{
-//	this->Delta = Delta;
-//}
-//
-//void DeterministicFiniteAutomaton::InsertIntoDelta(const Transition& transition, const std::vector<std::string>& states)
-//{
-//	this->Delta[transition] = states;
-//}
-//
-//void DeterministicFiniteAutomaton::InsertIntoDelta(const Transition& transition, const std::string& state)
-//{
-//	this->Delta[transition].push_back(state);
-//}
-//
-//const std::string& DeterministicFiniteAutomaton::GetQ0() const
-//{
-//	return this->q0;
-//}
-//
-//void DeterministicFiniteAutomaton::SetQ0(const std::string& q0)
-//{
-//	this->q0 = q0;
-//}
-//
-//const std::string& DeterministicFiniteAutomaton::GetF() const
-//{
-//	return this->F;
-//}
-//
-//void DeterministicFiniteAutomaton::SetF(const std::string& F)
-//{
-//	this->F = F;
-//}
-//
-//// Suprascrierea operatorului '<' pentru a permite sortarea obiectelor de tip Transition
-//bool Transition::operator<(const Transition& other) const
-//{
-//	if (state != other.state)
-//		return state < other.state;
-//	return symbol < other.symbol;
-//}
-//
-//std::size_t Transition::Hash::operator()(const Transition& transition) const
-//{
-//	return std::hash<std::string>()(transition.state + transition.symbol);
-//}
+#include "DeterministicFiniteAutomaton.h"
+
+#include <fstream>
+#include <format>
+
+const char LAMBDA = '$';
+
+// Validarea corectitudinii automatului
+bool DeterministicFiniteAutomaton::VerifyAutomaton() const
+{
+	if (Q.empty() || Sigma.empty() || q0.empty() || F.empty() || Delta.empty())
+		return false;
+
+	// Verifica daca F si q0 sunt incluse în Q
+	if (Q.find(F) == Q.end() || Q.find(q0) == Q.end())
+		return false;
+
+	// Verifica daca tranzitiile sunt valide
+	for (const auto& transitionProduction : Delta)
+	{
+		const Transition& transition = transitionProduction.first;
+		if (Q.find(transition.state) == Q.end())
+			return false;
+		if (Q.find(transitionProduction.second) == Q.end())
+			return false;
+		if (transition.symbol != LAMBDA && Sigma.find(transition.symbol) == Sigma.end())
+			return false;
+	}
+
+	// Exista minim 1 tranzitie care contine starea intiaiala
+	bool transitionWithS = false;
+	for (const char& caracter : Sigma)
+		if (Delta.find({ q0, caracter }) != Delta.end())
+		{
+			transitionWithS = true;
+			break;
+		}
+	if (!transitionWithS)
+		return false;
+
+	return true;
+}
+
+void DeterministicFiniteAutomaton::PrintAutomaton(std::ostream& os) const
+{
+	os << "Q:\t";
+	for (const auto& state : Q)
+		os << state << ' ';
+	os << '\n';
+
+	os << "Sigma:\t";
+	for (const auto& symbol : Sigma)
+		os << symbol << ' ';
+	os << '\n';
+
+	os << "Delta:";
+	for (const auto& transition : Delta)
+		os << std::format("\t({}, {}) -> {}\n", transition.first.state, transition.first.symbol, transition.second);
+
+	os << "q0:\t" << q0 << '\n';
+
+	os << "F:\t" << F << '\n';
+}
+
+// Citirea automatului dintr-un fisier
+void DeterministicFiniteAutomaton::ReadAutomaton(std::istream& is)
+{
+	int n;
+	is >> n;
+
+	// Citirea starilor (Q)
+	for (int i = 0; i < n; i++)
+	{
+		std::string state;
+		is >> state;
+		Q.insert(state);
+	}
+
+	is >> n;
+
+	// Citirea alfabetului (Sigma)
+	for (int i = 0; i < n; i++)
+	{
+		char symbol;
+		is >> symbol;
+		Sigma.insert(symbol);
+	}
+
+	// Citirea tranzitiilor (Delta)
+	is >> n;
+	for (int i = 0; i < n; i++)
+	{
+		Transition transition;
+		is >> transition.state >> transition.symbol;
+		std::string newState;
+		is >> newState;
+		Delta[transition] = newState;
+	}
+
+	// Citirea starii initiale (q0)
+	is >> q0;
+
+	// Citirea starii finale (F)
+	is >> F;
+}
+
+bool DeterministicFiniteAutomaton::operator!() const
+{
+	if (Q.empty() || Sigma.empty() || q0.empty() || F.empty() || Delta.empty())
+		return true;
+	return false;
+}
+
+std::ostream& operator<<(std::ostream& os, const DeterministicFiniteAutomaton& automaton)
+{
+	automaton.PrintAutomaton(os);
+	return os;
+}
+
+std::istream& operator>>(std::istream& is, DeterministicFiniteAutomaton& automaton)
+{
+	automaton.ReadAutomaton(is);
+	return is;
+}
+
+// Obtinerea multimii starilor (Q)
+const std::unordered_set<std::string>& DeterministicFiniteAutomaton::GetQ() const
+{
+	return this->Q;
+}
+
+void DeterministicFiniteAutomaton::SetQ(const std::unordered_set<std::string>& Q)
+{
+	this->Q = Q;
+}
+
+void DeterministicFiniteAutomaton::InsertIntoQ(const std::string& state)
+{
+	this->Q.insert(state);
+}
+
+const std::unordered_set<char>& DeterministicFiniteAutomaton::GetSigma() const
+{
+	return this->Sigma;
+}
+
+void DeterministicFiniteAutomaton::SetSigma(const std::unordered_set<char>& Sigma)
+{
+	this->Sigma = Sigma;
+}
+
+void DeterministicFiniteAutomaton::InsertIntoSigma(char symbol)
+{
+	this->Sigma.insert(symbol);
+}
+
+const std::unordered_map<Transition, std::string, Transition::Hash>& DeterministicFiniteAutomaton::GetDelta() const
+{
+	return this->Delta;
+}
+
+void DeterministicFiniteAutomaton::SetDelta(const std::unordered_map<Transition, std::string, Transition::Hash>& Delta)
+{
+	this->Delta = Delta;
+}
+
+void DeterministicFiniteAutomaton::InsertIntoDelta(const Transition& transition, const std::string& state)
+{
+	this->Delta[transition] = state;
+}
+
+const std::string& DeterministicFiniteAutomaton::GetQ0() const
+{
+	return this->q0;
+}
+
+void DeterministicFiniteAutomaton::SetQ0(const std::string& q0)
+{
+	this->q0 = q0;
+}
+
+const std::string& DeterministicFiniteAutomaton::GetF() const
+{
+	return this->F;
+}
+
+void DeterministicFiniteAutomaton::SetF(const std::string& F)
+{
+	this->F = F;
+}
+
+// Suprascrierea operatorului '<' pentru a permite sortarea obiectelor de tip Transition
+bool Transition::operator<(const Transition& other) const
+{
+	if (state != other.state)
+		return state < other.state;
+	return symbol < other.symbol;
+}
+
+std::size_t Transition::Hash::operator()(const Transition& transition) const
+{
+	return std::hash<std::string>()(transition.state + transition.symbol);
+}
