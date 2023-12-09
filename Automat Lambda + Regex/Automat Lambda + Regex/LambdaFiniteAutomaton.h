@@ -1,6 +1,7 @@
 #pragma once
-#include <unordered_map>
-#include <unordered_set>
+#include <map>
+#include <set>
+#include <vector>
 #include <string>
 #include <iostream>
 
@@ -15,6 +16,7 @@ public:
 	void ReadAutomaton(const std::string& fileName);
 	bool operator!() const;
 	std::vector<std::string> LambdaEnclosing(const std::string& state) const;
+	std::set<std::string> LambdaEnclosings(const std::set<std::string>& states) const;
 
 public:
 	LambdaFiniteAutomaton() = default;
@@ -22,16 +24,16 @@ public:
 	LambdaFiniteAutomaton& operator=(const LambdaFiniteAutomaton& other) = default;
 
 public:
-	const std::unordered_set<std::string>& GetQ() const;
-	void SetQ(const std::unordered_set<std::string>& Q);
+	const std::set<std::string>& GetQ() const;
+	void SetQ(const std::set<std::string>& Q);
 	void InsertIntoQ(const std::string& state);
 
-	const std::unordered_set<char>& GetSigma() const;
-	void SetSigma(const std::unordered_set<char>& Sigma);
+	const std::set<char>& GetSigma() const;
+	void SetSigma(const std::set<char>& Sigma);
 	void InsertIntoSigma(char symbol);
 
-	const std::unordered_map<Transition, std::vector<std::string>, Transition::Hash>& GetDelta() const;
-	void SetDelta(const std::unordered_map<Transition, std::vector<std::string>, Transition::Hash>& Delta);
+	const std::map<Transition, std::vector<std::string>>& GetDelta() const;
+	void SetDelta(const std::map<Transition, std::vector<std::string>>& Delta);
 	void InsertIntoDelta(const Transition& transition, const std::vector<std::string>& states);
 	void InsertIntoDelta(const Transition& transition, const std::string& state);
 
@@ -42,9 +44,9 @@ public:
 	void SetF(const std::string& F);
 
 private:
-	std::unordered_set<std::string> Q;
-	std::unordered_set<char> Sigma;
-	std::unordered_map<Transition, std::vector<std::string>, Transition::Hash> Delta;
+	std::set<std::string> Q;
+	std::set<char> Sigma;
+	std::map<Transition, std::vector<std::string>> Delta;
 	std::string q0;
 	std::string F;
 };

@@ -136,6 +136,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="LambdaFiniteAutomaton.cpp" />
     <ClCompile Include="Transition.cpp" />
+    <ClCompile Include="Utils.cpp" />
     <Text Include="LFA.in">
       <FileType>Document</FileType>
     </Text>
@@ -145,6 +146,7 @@
     <ClInclude Include="DeterministicFiniteAutomaton.h" />
     <ClInclude Include="LambdaFiniteAutomaton.h" />
     <ClInclude Include="Transition.h" />
+    <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DFA.in" />

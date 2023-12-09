@@ -1,6 +1,7 @@
 #pragma once
-#include <unordered_map>
-#include <unordered_set>
+#include <map>
+#include <set>
+#include <vector>
 #include <string>
 #include <iostream>
 
@@ -24,30 +25,30 @@ public:
 	DeterministicFiniteAutomaton& operator=(const DeterministicFiniteAutomaton& other) = default;
 
 public:
-	const std::unordered_set<std::string>& GetQ() const;
-	void SetQ(const std::unordered_set<std::string>& Q);
+	const std::set<std::string>& GetQ() const;
+	void SetQ(const std::set<std::string>& Q);
 	void InsertIntoQ(const std::string& state);
 
-	const std::unordered_set<char>& GetSigma() const;
-	void SetSigma(const std::unordered_set<char>& Sigma);
+	const std::set<char>& GetSigma() const;
+	void SetSigma(const std::set<char>& Sigma);
 	void InsertIntoSigma(char symbol);
 
-	const std::unordered_map<Transition, std::string, Transition::Hash>& GetDelta() const;
-	void SetDelta(const std::unordered_map<Transition, std::string, Transition::Hash>& Delta);
+	const std::map<Transition, std::string>& GetDelta() const;
+	void SetDelta(const std::map<Transition, std::string>& Delta);
 	void InsertIntoDelta(const Transition& transition, const std::string& state);
 
 	const std::string& GetQ0() const;
 	void SetQ0(const std::string& q0);
 
-	const std::unordered_set<std::string>& GetF() const;
-	void SetF(const std::unordered_set<std::string>& F);
+	const std::set<std::string>& GetF() const;
+	void SetF(const std::set<std::string>& F);
 
 private:
-	std::unordered_set<std::string> Q;
-	std::unordered_set<char> Sigma;
-	std::unordered_map<Transition, std::string, Transition::Hash> Delta;
+	std::set<std::string> Q;
+	std::set<char> Sigma;
+	std::map<Transition, std::string> Delta;
 	std::string q0;
-	std::unordered_set<std::string> F;
+	std::set<std::string> F;
 };
 
 std::ostream& operator<<(std::ostream& os, const DeterministicFiniteAutomaton& automaton);

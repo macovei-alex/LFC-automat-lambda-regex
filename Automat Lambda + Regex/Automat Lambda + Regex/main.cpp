@@ -43,4 +43,11 @@ void main()
 	dfa = Algorithms::DFAfromLFA(lfa);
 	std::cout << "\n\n";
 	dfa.PrintAutomaton();
+
+	std::cout << std::boolalpha << dfa.CheckWord("abbaa") << '\n';
+	std::cout << std::boolalpha << dfa.CheckWord("abbaaaa") << '\n';
+	std::cout << std::boolalpha << dfa.CheckWord("abaa") << '\n';
+	std::cout << std::boolalpha << dfa.CheckWord("abacbcba") << '\n';
+	std::cout << std::boolalpha << dfa.CheckWord("abbc") << '\n';
+
 }

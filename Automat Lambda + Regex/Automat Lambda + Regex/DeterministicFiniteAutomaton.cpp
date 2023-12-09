@@ -165,12 +165,12 @@ std::istream& operator>>(std::istream& is, DeterministicFiniteAutomaton& automat
 }
 
 // Obtinerea multimii starilor (Q)
-const std::unordered_set<std::string>& DeterministicFiniteAutomaton::GetQ() const
+const std::set<std::string>& DeterministicFiniteAutomaton::GetQ() const
 {
 	return this->Q;
 }
 
-void DeterministicFiniteAutomaton::SetQ(const std::unordered_set<std::string>& Q)
+void DeterministicFiniteAutomaton::SetQ(const std::set<std::string>& Q)
 {
 	this->Q = Q;
 }
@@ -180,12 +180,12 @@ void DeterministicFiniteAutomaton::InsertIntoQ(const std::string& state)
 	this->Q.insert(state);
 }
 
-const std::unordered_set<char>& DeterministicFiniteAutomaton::GetSigma() const
+const std::set<char>& DeterministicFiniteAutomaton::GetSigma() const
 {
 	return this->Sigma;
 }
 
-void DeterministicFiniteAutomaton::SetSigma(const std::unordered_set<char>& Sigma)
+void DeterministicFiniteAutomaton::SetSigma(const std::set<char>& Sigma)
 {
 	this->Sigma = Sigma;
 }
@@ -195,12 +195,12 @@ void DeterministicFiniteAutomaton::InsertIntoSigma(char symbol)
 	this->Sigma.insert(symbol);
 }
 
-const std::unordered_map<Transition, std::string, Transition::Hash>& DeterministicFiniteAutomaton::GetDelta() const
+const std::map<Transition, std::string>& DeterministicFiniteAutomaton::GetDelta() const
 {
 	return this->Delta;
 }
 
-void DeterministicFiniteAutomaton::SetDelta(const std::unordered_map<Transition, std::string, Transition::Hash>& Delta)
+void DeterministicFiniteAutomaton::SetDelta(const std::map<Transition, std::string>& Delta)
 {
 	this->Delta = Delta;
 }
@@ -220,12 +220,12 @@ void DeterministicFiniteAutomaton::SetQ0(const std::string& q0)
 	this->q0 = q0;
 }
 
-const std::unordered_set<std::string>& DeterministicFiniteAutomaton::GetF() const
+const std::set<std::string>& DeterministicFiniteAutomaton::GetF() const
 {
 	return this->F;
 }
 
-void DeterministicFiniteAutomaton::SetF(const std::unordered_set<std::string>& F)
+void DeterministicFiniteAutomaton::SetF(const std::set<std::string>& F)
 {
 	this->F = F;
 }

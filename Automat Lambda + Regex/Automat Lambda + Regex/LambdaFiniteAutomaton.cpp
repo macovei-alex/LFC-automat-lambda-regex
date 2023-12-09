@@ -123,7 +123,7 @@ bool LambdaFiniteAutomaton::operator!() const
 // DFS pe graful automatului
 std::vector<std::string> LambdaFiniteAutomaton::LambdaEnclosing(const std::string& state) const
 {
-	std::unordered_map<std::string, bool> visited;
+	std::map<std::string, bool> visited;
 	std::vector<std::string> enclosing;
 	std::stack<std::string> statesStack;
 
@@ -150,6 +150,17 @@ std::vector<std::string> LambdaFiniteAutomaton::LambdaEnclosing(const std::strin
 	return enclosing;
 }
 
+std::set<std::string> LambdaFiniteAutomaton::LambdaEnclosings(const std::set<std::string>& states) const
+{
+	std::set<std::string> allEnclosings;
+	for (const auto& state : states)
+	{
+		const auto singleEnclosing = LambdaEnclosing(state);
+		allEnclosings.insert(singleEnclosing.begin(), singleEnclosing.end());
+	}
+	return allEnclosings;
+}
+
 std::ostream& operator<<(std::ostream& os, const LambdaFiniteAutomaton& automaton)
 {
 	automaton.PrintAutomaton(os);
@@ -163,12 +174,12 @@ std::istream& operator>>(std::istream& is, LambdaFiniteAutomaton& automaton)
 }
 
 // Obtinerea multimii starilor (Q)
-const std::unordered_set<std::string>& LambdaFiniteAutomaton::GetQ() const
+const std::set<std::string>& LambdaFiniteAutomaton::GetQ() const
 {
 	return this->Q;
 }
 
-void LambdaFiniteAutomaton::SetQ(const std::unordered_set<std::string>& Q)
+void LambdaFiniteAutomaton::SetQ(const std::set<std::string>& Q)
 {
 	this->Q = Q;
 }
@@ -178,12 +189,12 @@ void LambdaFiniteAutomaton::InsertIntoQ(const std::string& state)
 	this->Q.insert(state);
 }
 
-const std::unordered_set<char>& LambdaFiniteAutomaton::GetSigma() const
+const std::set<char>& LambdaFiniteAutomaton::GetSigma() const
 {
 	return this->Sigma;
 }
 
-void LambdaFiniteAutomaton::SetSigma(const std::unordered_set<char>& Sigma)
+void LambdaFiniteAutomaton::SetSigma(const std::set<char>& Sigma)
 {
 	this->Sigma = Sigma;
 }
@@ -193,12 +204,12 @@ void LambdaFiniteAutomaton::InsertIntoSigma(char symbol)
 	this->Sigma.insert(symbol);
 }
 
-const std::unordered_map<Transition, std::vector<std::string>, Transition::Hash>& LambdaFiniteAutomaton::GetDelta() const
+const std::map<Transition, std::vector<std::string>>& LambdaFiniteAutomaton::GetDelta() const
 {
 	return this->Delta;
 }
 
-void LambdaFiniteAutomaton::SetDelta(const std::unordered_map<Transition, std::vector<std::string>, Transition::Hash>& Delta)
+void LambdaFiniteAutomaton::SetDelta(const std::map<Transition, std::vector<std::string>>& Delta)
 {
 	this->Delta = Delta;
 }
