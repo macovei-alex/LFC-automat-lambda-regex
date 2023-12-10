@@ -175,6 +175,21 @@ LambdaFiniteAutomaton::LambdaFiniteAutomaton(char c) :
 
 void LambdaFiniteAutomaton::Concatenate(LambdaFiniteAutomaton& other)
 {
+	other.OffsetStatesIndeces(Q.size() - 1);
+
+	// Toate tranzitiile in afara de cele cu starea initiala a lui other
+	Delta.insert(++other.Delta.begin(), other.Delta.end());
+
+	// Tranzitiile cu starea initiala a lui other
+	for(const auto& symbol : other.Sigma)
+		for(const auto& state : other.Delta[{other.q0, symbol}])
+			Delta[{other.q0, symbol}].push_back(state);
+
+	Q.insert(other.Q.begin(), other.Q.end());
+
+	q0 = this->q0;
+	F = other.F;
+	Sigma.insert(other.Sigma.begin(), other.Sigma.end());
 }
 
 void LambdaFiniteAutomaton::Alternate(LambdaFiniteAutomaton& other)
