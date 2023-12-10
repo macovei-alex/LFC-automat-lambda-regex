@@ -63,7 +63,6 @@ void main()
 	lfa2.ReadAutomaton("LFAtest2.in");
 	std::cout << lfa2 << '\n';
 
-	lfa1.Concatenate(lfa2);
-
+	lfa1.KleeneStar();
 	std::cout << lfa1;
 }

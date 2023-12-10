@@ -198,7 +198,7 @@ void LambdaFiniteAutomaton::Alternate(LambdaFiniteAutomaton& other)
 	other.OffsetStatesIndeces(Q.size() + 1);
 
 	std::string newBeginState = "q0";
-	std::string newFinalState = std::format("{}{}", 'q', Utils::GetNumberFromStateInt(other.F) + 1);
+	std::string newFinalState = std::format("{}{}", 'q', Utils::GetNumberFromStateInt(*other.Q.rbegin()) + 1);
 
 	Delta.insert(other.Delta.begin(), other.Delta.end());
 	Delta[{newBeginState, LAMBDA}] = { *Q.begin(), *other.Q.begin() };
@@ -208,6 +208,7 @@ void LambdaFiniteAutomaton::Alternate(LambdaFiniteAutomaton& other)
 	Q.insert(other.Q.begin(), other.Q.end());
 	Q.insert(newBeginState);
 	Q.insert(newFinalState);
+
 	q0 = newBeginState;
 	F = newFinalState;
 	Sigma.insert(other.Sigma.begin(), other.Sigma.end());
@@ -215,6 +216,21 @@ void LambdaFiniteAutomaton::Alternate(LambdaFiniteAutomaton& other)
 
 void LambdaFiniteAutomaton::KleeneStar()
 {
+	OffsetStatesIndeces(1);
+
+	std::string newBeginState = "q0";
+	std::string newFinalState = std::format("{}{}", 'q', Utils::GetNumberFromStateInt(*Q.rbegin()) + 1);
+
+	Delta[{newBeginState, LAMBDA}] = { *Q.begin(), newFinalState };
+	Delta[{*Q.rbegin(), LAMBDA}].push_back(*Q.begin());
+	Delta[{*Q.rbegin(), LAMBDA}].push_back(newFinalState);
+
+	Q.insert(newBeginState);
+	Q.insert(newFinalState);
+
+	q0 = newBeginState;
+	F = newFinalState;
+	Sigma = this->Sigma;
 }
 
 void LambdaFiniteAutomaton::OffsetStatesIndeces(const int offest)
