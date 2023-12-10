@@ -2,8 +2,9 @@
 
 #include <string>
 #include <format>
+#include <stack>
 
-DFA Algorithms::DFAfromLFA(const LFA& lfa, const bool print)
+DFA Algorithms::DFAfromLFA(const LFA& lfa, const bool doPrint)
 {
 	DFA dfa;
 
@@ -11,7 +12,7 @@ DFA Algorithms::DFAfromLFA(const LFA& lfa, const bool print)
 	std::map<std::string, std::vector<std::string>> Q;
 	Q["p0"] = lfa.LambdaEnclosing(lfa.GetQ0());
 
-	if (print)
+	if (doPrint)
 	{
 		std::cout << "p0 = { ";
 		for (const auto& state : Q["p0"])
@@ -29,7 +30,7 @@ DFA Algorithms::DFAfromLFA(const LFA& lfa, const bool print)
 		{
 			std::vector<std::string> lambdaEnclosings = DetermineNewStates(lfa, Q[currentState], symbol);
 
-			if (print)
+			if (doPrint)
 			{
 				std::cout << std::format("({}, {}) -> ", currentState, symbol) << "{ ";
 				for (const auto& state : lambdaEnclosings)
@@ -39,7 +40,7 @@ DFA Algorithms::DFAfromLFA(const LFA& lfa, const bool print)
 
 			if (lambdaEnclosings.empty())
 			{
-				if (print)
+				if (doPrint)
 					std::cout << '\n';
 
 				continue;
@@ -54,7 +55,7 @@ DFA Algorithms::DFAfromLFA(const LFA& lfa, const bool print)
 					stateAlreadyExists = true;
 					Delta[currentTransition] = existingState.first;
 
-					if (print)
+					if (doPrint)
 						std::cout << std::format("= {}\n", existingState.first);
 
 					break;
@@ -66,7 +67,7 @@ DFA Algorithms::DFAfromLFA(const LFA& lfa, const bool print)
 				Q[newState] = std::move(lambdaEnclosings);
 				Delta[currentTransition] = newState;
 
-				if (print)
+				if (doPrint)
 					std::cout << std::format("= {}\n", newState);
 			}
 		}
@@ -119,4 +120,135 @@ std::vector<std::string> Algorithms::DetermineNewStates(const LFA& lfa, const st
 	std::set<std::string> lambdaEnclosings = lfa.LambdaEnclosings(newStates);
 
 	return { lambdaEnclosings.begin(), lambdaEnclosings.end() };
+}
+
+std::string Algorithms::PolishPostfixFromRegex(const std::string& regex)
+{
+	std::stack<char> operatorStack;
+	std::string postfix;
+	std::string newRegex = InsertConcatenationOperator(regex);
+
+	postfix.reserve(newRegex.size());
+
+	for (char c : newRegex)
+	{
+		if (isalnum(c))
+			postfix += c;
+
+		else if (c == '(')
+			operatorStack.push(c);
+
+		else if (c == ')')
+		{
+			while (!operatorStack.empty() && operatorStack.top() != '(')
+			{
+				postfix += operatorStack.top();
+				operatorStack.pop();
+			}
+			operatorStack.pop(); // Pop the '('
+		}
+
+		else if (IsOperator(c))
+		{
+			while (!operatorStack.empty() && GetPrecedence(operatorStack.top()) >= GetPrecedence(c))
+			{
+				postfix += operatorStack.top();
+				operatorStack.pop();
+			}
+			operatorStack.push(c);
+		}
+	}
+
+	while (!operatorStack.empty())
+	{
+		postfix += operatorStack.top();
+		operatorStack.pop();
+	}
+
+	return postfix;
+}
+
+std::string Algorithms::RegexFromPolishPostfix(const std::string& postfix)
+{
+	std::stack<std::string> stack;
+
+	for (char c : postfix)
+	{
+		if (!IsOperator(c))
+		{
+			stack.push(std::string(1, c));
+			continue;
+		}
+
+		std::string operand1 = stack.top();
+		stack.pop();
+		std::string operand2 = stack.top();
+
+		switch (c)
+		{
+
+		case '.':
+			stack.pop();
+			stack.push(std::format("{}.{}", operand2, operand1));
+			break;
+
+		case '|':
+			stack.pop();
+			stack.push(std::format("{}|{}", operand2, operand1));
+			break;
+
+		case '*':
+			stack.push(std::format("({})*", operand1));
+			break;
+
+		}
+	}
+
+	return stack.top();
+}
+
+std::string Algorithms::InsertConcatenationOperator(const std::string& regex)
+{
+	std::string newRegex;
+	newRegex.reserve(regex.size() * 2);
+	for (size_t i = 0; i < regex.size() - 1; i++)
+	{
+		newRegex += regex[i];
+
+		if (regex[i] == '(' || regex[i] == '|')
+			continue;
+
+		if (regex[i + 1] == '*' || regex[i + 1] == ')' || regex[i + 1] == '|')
+			continue;
+
+		newRegex += '.';
+	}
+	newRegex += regex.back();
+	return newRegex;
+}
+
+std::string Algorithms::RemoveConcatenationOperator(const std::string& regex)
+{
+	std::string newRegex;
+	newRegex.reserve(regex.size());
+	for (size_t i = 0; i < regex.size(); i++)
+	{
+		if (regex[i] == '.')
+			continue;
+		newRegex += regex[i];
+	}
+	return newRegex;
+}
+
+bool Algorithms::IsOperator(char c)
+{
+	return c == '|' || c == '*' || c == '.';
+}
+
+int Algorithms::GetPrecedence(char c)
+{
+	if (c == '|') return 1;
+	if (c == '.') return 2;
+	if (c == '*') return 3;
+	return 0;
 }

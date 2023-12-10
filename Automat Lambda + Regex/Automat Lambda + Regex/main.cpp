@@ -50,4 +50,9 @@ void main()
 	std::cout << std::boolalpha << dfa.CheckWord("abacbcba") << '\n';
 	std::cout << std::boolalpha << dfa.CheckWord("abbc") << '\n';
 
+	std::cout << Algorithms::InsertConcatenationOperator("aba(aa|bb)*c(ab)*") << '\n';
+	std::cout << Algorithms::PolishPostfixFromRegex("aba(aa|bb)*c(ab)*") << '\n';
+	std::cout << Algorithms::RemoveConcatenationOperator(
+		Algorithms::RegexFromPolishPostfix(
+			Algorithms::PolishPostfixFromRegex("aba(aa|bb)*c(ab)*"))) << '\n';
 }

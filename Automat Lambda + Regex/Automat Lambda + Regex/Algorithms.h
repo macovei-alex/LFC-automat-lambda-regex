@@ -12,6 +12,15 @@ class Algorithms
 public:
 	Algorithms() = delete;
 
-	static DFA DFAfromLFA(const LFA& lfa, const bool print = false);
+	static DFA DFAfromLFA(const LFA& lfa, const bool doPrint = false);
 	static std::vector<std::string> DetermineNewStates(const LFA& lfa, const std::vector<std::string>& newStatesComponents, char symbol);
+
+	static std::string PolishPostfixFromRegex(const std::string& regex);
+	static std::string RegexFromPolishPostfix(const std::string& postfix);
+	static std::string InsertConcatenationOperator(const std::string& regex);
+	static std::string RemoveConcatenationOperator(const std::string& regex);
+
+private:
+	static inline bool IsOperator(char c);
+	static int GetPrecedence(char c);
 };
