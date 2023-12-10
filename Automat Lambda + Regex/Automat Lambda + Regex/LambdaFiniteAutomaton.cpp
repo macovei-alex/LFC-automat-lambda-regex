@@ -4,8 +4,6 @@
 #include <format>
 #include <stack>
 
-#include "Utils.h"
-
 const char LAMBDA = '$';
 
 // Validarea corectitudinii automatului
@@ -59,8 +57,8 @@ void LambdaFiniteAutomaton::PrintAutomaton(std::ostream& os) const
 
 	os << "Delta:";
 	for (const auto& transition : Delta)
-		for (const auto& stare : transition.second)
-			os << std::format("\t({}, {}) -> {}\n", transition.first.state, transition.first.symbol, stare);
+		for (const auto& state : transition.second)
+			os << std::format("\t({}, {}) -> {}\n", transition.first.state, transition.first.symbol, state);
 
 	os << "q0:\t" << q0 << '\n';
 
@@ -76,9 +74,9 @@ void LambdaFiniteAutomaton::ReadAutomaton(std::istream& is)
 	// Citirea starilor (Q)
 	for (int i = 0; i < n; i++)
 	{
-		std::string state;
-		is >> state;
-		Q.insert(state);
+		std::string str;
+		is >> str;
+		Q.insert(str);
 	}
 
 	is >> n;
@@ -122,7 +120,6 @@ bool LambdaFiniteAutomaton::operator!() const
 	return false;
 }
 
-// DFS pe graful automatului
 std::vector<std::string> LambdaFiniteAutomaton::LambdaEnclosing(const std::string& state) const
 {
 	std::map<std::string, bool> visited;
@@ -197,8 +194,8 @@ void LambdaFiniteAutomaton::Alternate(LambdaFiniteAutomaton& other)
 	OffsetStatesIndeces(1);
 	other.OffsetStatesIndeces(Q.size() + 1);
 
-	std::string newBeginState = "q0";
-	std::string newFinalState = std::format("{}{}", 'q', Utils::GetNumberFromStateInt(*other.Q.rbegin()) + 1);
+	std::string newBeginState{ "q0" };
+	std::string newFinalState{ std::format("q{}", Utils::GetNumberFromStateInt(other.F) + 1)};
 
 	Delta.insert(other.Delta.begin(), other.Delta.end());
 	Delta[{newBeginState, LAMBDA}] = { *Q.begin(), *other.Q.begin() };
@@ -219,7 +216,7 @@ void LambdaFiniteAutomaton::KleeneStar()
 	OffsetStatesIndeces(1);
 
 	std::string newBeginState = "q0";
-	std::string newFinalState = std::format("{}{}", 'q', Utils::GetNumberFromStateInt(*Q.rbegin()) + 1);
+	std::string newFinalState = std::format("q{}", Utils::GetNumberFromStateInt(F) + 1);
 
 	Delta[{newBeginState, LAMBDA}] = { *Q.begin(), newFinalState };
 	Delta[{*Q.rbegin(), LAMBDA}].push_back(*Q.begin());
@@ -233,34 +230,34 @@ void LambdaFiniteAutomaton::KleeneStar()
 	Sigma = this->Sigma;
 }
 
-void LambdaFiniteAutomaton::OffsetStatesIndeces(const int offest)
+void LambdaFiniteAutomaton::OffsetStatesIndeces(const size_t offest)
 {
-	std::set<std::string> tempQ;
-	for (const auto& state : Q)
+	std::set<std::string, Utils::StateComparator> tempQ;
+	for (const auto& str : Q)
 	{
-		int newIndex = Utils::GetNumberFromStateInt(state) + offest;
-		tempQ.insert(std::format("{}{}", Utils::GetLetterFromState(state), newIndex));
+		size_t newIndex = Utils::GetNumberFromStateInt(str) + offest;
+		tempQ.insert(std::format("{}{}", Utils::GetLetterFromState(str), newIndex));
 	}
 
 	std::map<Transition, std::vector<std::string>> tempDelta;
 	for (const auto& transition : Delta)
 	{
 		Transition tempTransition;
-		int newIndex = Utils::GetNumberFromStateInt(transition.first.state) + offest;
+		size_t newIndex = Utils::GetNumberFromStateInt(transition.first.state) + offest;
 		tempTransition.state = std::format("{}{}", Utils::GetLetterFromState(transition.first.state), newIndex);
 		tempTransition.symbol = transition.first.symbol;
 
 		std::vector<std::string> tempStates;
 		for (const auto& state : transition.second)
 		{
-			int newIndex = Utils::GetNumberFromStateInt(state) + offest;
+			size_t newIndex = Utils::GetNumberFromStateInt(state) + offest;
 			tempStates.push_back(std::format("{}{}", Utils::GetLetterFromState(state), newIndex));
 		}
 
 		tempDelta[tempTransition] = tempStates;
 	}
 
-	int newIndex = Utils::GetNumberFromStateInt(q0) + offest;
+	size_t newIndex = Utils::GetNumberFromStateInt(q0) + offest;
 	std::string tempQ0 = std::format("{}{}", Utils::GetLetterFromState(q0), newIndex);
 
 	newIndex = Utils::GetNumberFromStateInt(F) + offest;
@@ -270,6 +267,24 @@ void LambdaFiniteAutomaton::OffsetStatesIndeces(const int offest)
 	Delta = std::move(tempDelta);
 	q0 = std::move(tempQ0);
 	F = std::move(tempF);
+}
+
+LambdaFiniteAutomaton& LambdaFiniteAutomaton::operator+=(LambdaFiniteAutomaton& other)
+{
+	Concatenate(other);
+	return *this;
+}
+
+LambdaFiniteAutomaton& LambdaFiniteAutomaton::operator|=(LambdaFiniteAutomaton& other)
+{
+	Alternate(other);
+	return *this;
+}
+
+LambdaFiniteAutomaton& LambdaFiniteAutomaton::operator*()
+{
+	KleeneStar();
+	return *this;
 }
 
 std::ostream& operator<<(std::ostream& os, const LambdaFiniteAutomaton& automaton)
@@ -285,12 +300,12 @@ std::istream& operator>>(std::istream& is, LambdaFiniteAutomaton& automaton)
 }
 
 // Obtinerea multimii starilor (Q)
-const std::set<std::string>& LambdaFiniteAutomaton::GetQ() const
+const std::set<std::string, Utils::StateComparator>& LambdaFiniteAutomaton::GetQ() const
 {
 	return this->Q;
 }
 
-void LambdaFiniteAutomaton::SetQ(const std::set<std::string>& Q)
+void LambdaFiniteAutomaton::SetQ(const std::set<std::string, Utils::StateComparator>& Q)
 {
 	this->Q = Q;
 }

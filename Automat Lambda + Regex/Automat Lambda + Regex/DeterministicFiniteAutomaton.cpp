@@ -165,12 +165,12 @@ std::istream& operator>>(std::istream& is, DeterministicFiniteAutomaton& automat
 }
 
 // Obtinerea multimii starilor (Q)
-const std::set<std::string>& DeterministicFiniteAutomaton::GetQ() const
+const std::set<std::string, Utils::StateComparator>& DeterministicFiniteAutomaton::GetQ() const
 {
 	return this->Q;
 }
 
-void DeterministicFiniteAutomaton::SetQ(const std::set<std::string>& Q)
+void DeterministicFiniteAutomaton::SetQ(const std::set<std::string, Utils::StateComparator>& Q)
 {
 	this->Q = Q;
 }
@@ -220,12 +220,12 @@ void DeterministicFiniteAutomaton::SetQ0(const std::string& q0)
 	this->q0 = q0;
 }
 
-const std::set<std::string>& DeterministicFiniteAutomaton::GetF() const
+const std::set<std::string, Utils::StateComparator>& DeterministicFiniteAutomaton::GetF() const
 {
 	return this->F;
 }
 
-void DeterministicFiniteAutomaton::SetF(const std::set<std::string>& F)
+void DeterministicFiniteAutomaton::SetF(const std::set<std::string, Utils::StateComparator>& F)
 {
 	this->F = F;
 }

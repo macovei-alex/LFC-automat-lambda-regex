@@ -4,6 +4,8 @@
 #include <format>
 #include <stack>
 
+char Algorithms::concatOp = '.';
+
 DFA Algorithms::DFAfromLFA(const LFA& lfa, const bool doPrint)
 {
 	DFA dfa;
@@ -24,7 +26,7 @@ DFA Algorithms::DFAfromLFA(const LFA& lfa, const bool doPrint)
 
 	while (currentStateIndex < Q.size())
 	{
-		std::string currentState = std::format("p{}", currentStateIndex);
+		std::string currentState{ std::format("p{}", currentStateIndex) };
 
 		for (char symbol : lfa.GetSigma())
 		{
@@ -75,27 +77,25 @@ DFA Algorithms::DFAfromLFA(const LFA& lfa, const bool doPrint)
 		currentStateIndex++;
 	}
 
-	const char q = 'q';
-
 	dfa.SetQ({});
 	for (const auto& pair : Q)
-		dfa.InsertIntoQ(std::format("{}{}", q, Utils::GetNumberFromStateStr(pair.first)));
+		dfa.InsertIntoQ(std::format("q{}", Utils::GetNumberFromStateStr(pair.first)));
 
 	dfa.SetDelta({});
 	for (const auto& pair : Delta)
 	{
-		std::string startingState = std::format("{}{}", q, Utils::GetNumberFromStateStr(pair.first.state));
-		std::string destinationState = std::format("{}{}", q, Utils::GetNumberFromStateStr(pair.second));
+		std::string startingState = std::format("q{}", Utils::GetNumberFromStateStr(pair.first.state));
+		std::string destinationState = std::format("q{}", Utils::GetNumberFromStateStr(pair.second));
 		Transition tranzitie{ startingState, pair.first.symbol };
 		dfa.InsertIntoDelta(tranzitie, destinationState);
 	}
 
-	std::set<std::string> newFinalStates;
+	std::set<std::string, Utils::StateComparator> newFinalStates;
 	for (const auto& newState : Q)
 		for (const auto& componentState : newState.second)
 			if (componentState == lfa.GetF())
 			{
-				newFinalStates.insert(std::format("{}{}", q, Utils::GetNumberFromStateStr(newState.first)));
+				newFinalStates.insert(std::format("q{}", Utils::GetNumberFromStateStr(newState.first)));
 				break;
 			}
 	dfa.SetF(newFinalStates);
@@ -122,11 +122,15 @@ std::vector<std::string> Algorithms::DetermineNewStates(const LFA& lfa, const st
 	return { lambdaEnclosings.begin(), lambdaEnclosings.end() };
 }
 
-std::string Algorithms::PolishPostfixFromRegex(const std::string& regex, const char concatOp)
+std::string Algorithms::PolishPostfixFromRegex(const std::string& regex)
 {
 	std::stack<char> operatorStack;
 	std::string postfix;
-	std::string newRegex = InsertConcatenationOperator(regex, concatOp);
+	std::string newRegex;
+	if (newRegex.find(concatOp) == std::string::npos)
+		newRegex = InsertConcatenationOperator(regex);
+	else
+		newRegex = regex;
 
 	postfix.reserve(newRegex.size());
 
@@ -148,9 +152,9 @@ std::string Algorithms::PolishPostfixFromRegex(const std::string& regex, const c
 			operatorStack.pop(); // Pop the '('
 		}
 
-		else if (IsOperator(c, concatOp))
+		else if (IsOperator(c))
 		{
-			while (!operatorStack.empty() && GetPrecedence(operatorStack.top(), concatOp) >= GetPrecedence(c, concatOp))
+			while (!operatorStack.empty() && GetPrecedence(operatorStack.top()) >= GetPrecedence(c))
 			{
 				postfix += operatorStack.top();
 				operatorStack.pop();
@@ -168,13 +172,56 @@ std::string Algorithms::PolishPostfixFromRegex(const std::string& regex, const c
 	return postfix;
 }
 
-std::string Algorithms::RegexFromPolishPostfix(const std::string& postfix, const char concatOp)
+LFA Algorithms::LFAfromRegex(const std::string& regex)
+{
+	std::string postfix = PolishPostfixFromRegex(regex);
+	std::stack<LFA*> stack;
+
+	for (char c : postfix)
+	{
+		if (!IsOperator(c))
+		{
+			stack.push(new LFA(c));
+			continue;
+		}
+
+		LFA* operand1 = stack.top();
+		stack.pop();
+		LFA* operand2;
+
+		if (c == concatOp)
+		{
+			operand2 = stack.top();
+			stack.pop();
+			*operand2 += *operand1;
+			stack.push(operand2);
+			delete operand1;
+		}
+		else if (c == '|')
+		{
+			operand2 = stack.top();
+			stack.pop();
+			*operand2 |= *operand1;
+			stack.push(operand2);
+			delete operand1;
+		}
+		else if (c == '*')
+		{
+			*(*operand1);
+			stack.push(operand1);
+		}
+	}
+
+	return *stack.top();
+}
+
+std::string Algorithms::RegexFromPolishPostfix(const std::string& postfix)
 {
 	std::stack<std::string> stack;
 
 	for (char c : postfix)
 	{
-		if (!IsOperator(c, concatOp))
+		if (!IsOperator(c))
 		{
 			stack.push(std::string(1, c));
 			continue;
@@ -202,7 +249,7 @@ std::string Algorithms::RegexFromPolishPostfix(const std::string& postfix, const
 	return stack.top();
 }
 
-std::string Algorithms::InsertConcatenationOperator(const std::string& regex, const char concatOp)
+std::string Algorithms::InsertConcatenationOperator(const std::string& regex)
 {
 	std::string newRegex;
 	newRegex.reserve(regex.size() * 2);
@@ -225,7 +272,7 @@ std::string Algorithms::InsertConcatenationOperator(const std::string& regex, co
 	return newRegex;
 }
 
-std::string Algorithms::RemoveConcatenationOperator(const std::string& regex, const char concatOp)
+std::string Algorithms::RemoveConcatenationOperator(const std::string& regex)
 {
 	std::string newRegex;
 	newRegex.reserve(regex.size());
@@ -240,12 +287,12 @@ std::string Algorithms::RemoveConcatenationOperator(const std::string& regex, co
 	return newRegex;
 }
 
-bool Algorithms::IsOperator(char c, const char concatOp)
+bool Algorithms::IsOperator(char c)
 {
 	return c == '|' || c == '*' || c == concatOp;
 }
 
-int Algorithms::GetPrecedence(char c, const char concatOp)
+int Algorithms::GetPrecedence(char c)
 {
 	if (c == '|') return 1;
 	if (c == concatOp) return 2;

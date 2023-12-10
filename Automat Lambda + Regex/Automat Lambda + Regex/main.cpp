@@ -8,9 +8,11 @@
 using LFA = class LambdaFiniteAutomaton;
 using DFA = class DeterministicFiniteAutomaton;
 
-void main()
+int main()
 {
-	/*LFA lfa;
+	LFA lfa = Algorithms::LFAfromRegex("ab(ac|bc)*b(a)*");
+
+	std::cout << lfa;
 
 	lfa.ReadAutomaton("LFA.in");
 	lfa.PrintAutomaton();
@@ -54,15 +56,7 @@ void main()
 	std::cout << Algorithms::PolishPostfixFromRegex("aba(aa|bb)*c(ab)*") << '\n';
 	std::cout << Algorithms::RemoveConcatenationOperator(
 		Algorithms::RegexFromPolishPostfix(
-			Algorithms::PolishPostfixFromRegex("aba(aa|bb)*c(ab)*"))) << '\n';*/
+			Algorithms::PolishPostfixFromRegex("aba(aa|bb)*c(ab)*"))) << '\n';
 
-	LFA lfa1, lfa2;
-	lfa1.ReadAutomaton("LFAtest1.in");
-	std::cout << lfa1 << '\n';
-
-	lfa2.ReadAutomaton("LFAtest2.in");
-	std::cout << lfa2 << '\n';
-
-	lfa1.KleeneStar();
-	std::cout << lfa1;
+	return 0;
 }

@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "Transition.h"
+#include "Utils.h"
 
 class DeterministicFiniteAutomaton
 {
@@ -25,8 +26,8 @@ public:
 	DeterministicFiniteAutomaton& operator=(const DeterministicFiniteAutomaton& other) = default;
 
 public:
-	const std::set<std::string>& GetQ() const;
-	void SetQ(const std::set<std::string>& Q);
+	const std::set<std::string, Utils::StateComparator>& GetQ() const;
+	void SetQ(const std::set<std::string, Utils::StateComparator>& Q);
 	void InsertIntoQ(const std::string& state);
 
 	const std::set<char>& GetSigma() const;
@@ -40,15 +41,15 @@ public:
 	const std::string& GetQ0() const;
 	void SetQ0(const std::string& q0);
 
-	const std::set<std::string>& GetF() const;
-	void SetF(const std::set<std::string>& F);
+	const std::set<std::string, Utils::StateComparator>& GetF() const;
+	void SetF(const std::set<std::string, Utils::StateComparator>& F);
 
 private:
-	std::set<std::string> Q;
+	std::set<std::string, Utils::StateComparator> Q;
 	std::set<char> Sigma;
 	std::map<Transition, std::string> Delta;
 	std::string q0;
-	std::set<std::string> F;
+	std::set<std::string, Utils::StateComparator> F;
 };
 
 std::ostream& operator<<(std::ostream& os, const DeterministicFiniteAutomaton& automaton);
