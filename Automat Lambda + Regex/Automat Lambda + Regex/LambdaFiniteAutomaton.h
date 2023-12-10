@@ -19,6 +19,13 @@ public:
 	std::set<std::string> LambdaEnclosings(const std::set<std::string>& states) const;
 
 public:
+	LambdaFiniteAutomaton(char c);
+	void Concatenate(LambdaFiniteAutomaton& other);
+	void Alternate(LambdaFiniteAutomaton& other);
+	void KleeneStar();
+	void OffsetStatesIndeces(const int offest);
+
+public:
 	LambdaFiniteAutomaton() = default;
 	LambdaFiniteAutomaton(const LambdaFiniteAutomaton& other) = default;
 	LambdaFiniteAutomaton& operator=(const LambdaFiniteAutomaton& other) = default;

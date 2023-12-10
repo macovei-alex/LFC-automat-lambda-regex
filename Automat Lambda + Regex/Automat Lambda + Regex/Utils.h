@@ -7,5 +7,7 @@ class Utils
 public:
 	Utils() = delete;
 
-	static std::string GetNumberFromState(const std::string& state);
+	static std::string GetNumberFromStateStr(const std::string& state);
+	static int GetNumberFromStateInt(const std::string& state);
+	static std::string GetLetterFromState(const std::string& state);
 };

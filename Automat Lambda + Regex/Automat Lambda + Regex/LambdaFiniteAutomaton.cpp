@@ -4,6 +4,8 @@
 #include <format>
 #include <stack>
 
+#include "Utils.h"
+
 const char LAMBDA = '$';
 
 // Validarea corectitudinii automatului
@@ -159,6 +161,84 @@ std::set<std::string> LambdaFiniteAutomaton::LambdaEnclosings(const std::set<std
 		allEnclosings.insert(singleEnclosing.begin(), singleEnclosing.end());
 	}
 	return allEnclosings;
+}
+
+LambdaFiniteAutomaton::LambdaFiniteAutomaton(char c) :
+	Q{ "q0", "q1" },
+	Sigma{ c },
+	Delta{ {{ "q0", c }, { "q1" }} },
+	q0{ "q0" },
+	F{ "q1" }
+{
+	/* empty */
+}
+
+void LambdaFiniteAutomaton::Concatenate(LambdaFiniteAutomaton& other)
+{
+}
+
+void LambdaFiniteAutomaton::Alternate(LambdaFiniteAutomaton& other)
+{
+	OffsetStatesIndeces(1);
+	other.OffsetStatesIndeces(Q.size() + 1);
+
+	std::string newBeginState = "q0";
+	std::string newFinalState = std::format("{}{}", 'q', Utils::GetNumberFromStateInt(other.F) + 1);
+
+	Delta.insert(other.Delta.begin(), other.Delta.end());
+	Delta[{newBeginState, LAMBDA}] = { *Q.begin(), *other.Q.begin() };
+	Delta[{*Q.rbegin(), LAMBDA}] = { newFinalState };
+	Delta[{*other.Q.rbegin(), LAMBDA}] = { newFinalState };
+
+	Q.insert(other.Q.begin(), other.Q.end());
+	Q.insert(newBeginState);
+	Q.insert(newFinalState);
+	q0 = newBeginState;
+	F = newFinalState;
+	Sigma.insert(other.Sigma.begin(), other.Sigma.end());
+}
+
+void LambdaFiniteAutomaton::KleeneStar()
+{
+}
+
+void LambdaFiniteAutomaton::OffsetStatesIndeces(const int offest)
+{
+	std::set<std::string> tempQ;
+	for (const auto& state : Q)
+	{
+		int newIndex = Utils::GetNumberFromStateInt(state) + offest;
+		tempQ.insert(std::format("{}{}", Utils::GetLetterFromState(state), newIndex));
+	}
+
+	std::map<Transition, std::vector<std::string>> tempDelta;
+	for (const auto& transition : Delta)
+	{
+		Transition tempTransition;
+		int newIndex = Utils::GetNumberFromStateInt(transition.first.state) + offest;
+		tempTransition.state = std::format("{}{}", Utils::GetLetterFromState(transition.first.state), newIndex);
+		tempTransition.symbol = transition.first.symbol;
+
+		std::vector<std::string> tempStates;
+		for (const auto& state : transition.second)
+		{
+			int newIndex = Utils::GetNumberFromStateInt(state) + offest;
+			tempStates.push_back(std::format("{}{}", Utils::GetLetterFromState(state), newIndex));
+		}
+
+		tempDelta[tempTransition] = tempStates;
+	}
+
+	int newIndex = Utils::GetNumberFromStateInt(q0) + offest;
+	std::string tempQ0 = std::format("{}{}", Utils::GetLetterFromState(q0), newIndex);
+
+	newIndex = Utils::GetNumberFromStateInt(F) + offest;
+	std::string tempF = std::format("{}{}", Utils::GetLetterFromState(F), newIndex);
+
+	Q = std::move(tempQ);
+	Delta = std::move(tempDelta);
+	q0 = std::move(tempQ0);
+	F = std::move(tempF);
 }
 
 std::ostream& operator<<(std::ostream& os, const LambdaFiniteAutomaton& automaton)

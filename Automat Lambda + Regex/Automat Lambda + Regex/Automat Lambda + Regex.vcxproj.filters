@@ -60,5 +60,11 @@
     <None Include="DFA.in">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="LFAtest1.in">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="LFAtest2.in">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
