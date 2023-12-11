@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <unordered_map>
 
 #include "LambdaFiniteAutomaton.h"
 #include "DeterministicFiniteAutomaton.h"
@@ -10,12 +11,9 @@ using DFA = class DeterministicFiniteAutomaton;
 
 int main()
 {
-	LFA lfa = Algorithms::LFAfromRegex("ab(ac|bc)*b(a)*");
+	LFA lfa = Algorithms::LFAfromRegex("ab(ac|bc)*b(a)*", true);
 
-	std::cout << lfa;
-
-	lfa.ReadAutomaton("LFA.in");
-	lfa.PrintAutomaton();
+	std::cout << lfa << '\n';
 
 	std::cout << "Automat corect: " << std::boolalpha << lfa.VerifyAutomaton() << '\n';
 
@@ -29,10 +27,9 @@ int main()
 
 	std::cout << "\n\n\n";
 
-	DFA dfa;
+	DFA dfa = Algorithms::DFAfromLFA(lfa);
 
-	dfa.ReadAutomaton("DFA.in");
-	dfa.PrintAutomaton();
+	std::cout << dfa << '\n';
 
 	std::cout << "Automat corect: " << std::boolalpha << dfa.VerifyAutomaton() << '\n';
 

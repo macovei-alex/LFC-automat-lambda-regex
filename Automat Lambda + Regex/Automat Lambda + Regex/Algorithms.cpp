@@ -172,16 +172,46 @@ std::string Algorithms::PolishPostfixFromRegex(const std::string& regex)
 	return postfix;
 }
 
-LFA Algorithms::LFAfromRegex(const std::string& regex)
+LFA Algorithms::LFAfromRegex(const std::string& regex, bool doPrint)
 {
 	std::string postfix = PolishPostfixFromRegex(regex);
 	std::stack<LFA*> stack;
 
+	if (doPrint)
+		std::cout << "BEGIN ALGORITHM\n\n";
+
 	for (char c : postfix)
 	{
+		if(doPrint)
+			std::cout << "BEGIN ITERATION\n";
+
+		if (doPrint && !stack.empty())
+		{
+			std::cout << "TOP =\n";
+			stack.top()->PrintAutomatonDebugForm();
+
+			if (stack.size() >= 2)
+			{
+				std::cout << "NEXT =\n";
+				LFA* temp = stack.top();
+				stack.pop();
+				stack.top()->PrintAutomatonDebugForm();
+				stack.push(temp);
+			}
+		}
+
 		if (!IsOperator(c))
 		{
-			stack.push(new LFA(c));
+			LFA* newLFA = new LFA(c);
+			stack.push(newLFA);
+
+			if (doPrint)
+			{
+				std::cout << std::format("Character = [{}]\nNEW =\n", c);
+				newLFA->PrintAutomatonDebugForm();
+				std::cout << "END ITERATION\n\n";
+			}
+
 			continue;
 		}
 
@@ -210,7 +240,17 @@ LFA Algorithms::LFAfromRegex(const std::string& regex)
 			*(*operand1);
 			stack.push(operand1);
 		}
+
+		if (doPrint)
+		{
+			std::cout << std::format("Character = [{}]\nNEW =\n", c);
+			stack.top()->PrintAutomatonDebugForm();
+			std::cout << "END ITERATION\n\n";
+		}
 	}
+
+	if (doPrint)
+		std::cout << "END ALGORITHM\n\n";
 
 	return *stack.top();
 }
@@ -246,6 +286,7 @@ std::string Algorithms::RegexFromPolishPostfix(const std::string& postfix)
 			stack.push(std::format("({})*", operand1));
 		}
 	}
+
 	return stack.top();
 }
 

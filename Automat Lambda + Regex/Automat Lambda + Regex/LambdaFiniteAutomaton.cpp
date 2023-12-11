@@ -65,6 +65,18 @@ void LambdaFiniteAutomaton::PrintAutomaton(std::ostream& os) const
 	os << "F:\t" << F << '\n';
 }
 
+void LambdaFiniteAutomaton::PrintAutomatonDebugForm(std::ostream& os) const
+{
+	for (const auto& transitionList : Delta)
+	{
+		os << std::format("\t({}, {}) -> ", transitionList.first.state, transitionList.first.symbol);
+		os << "{ ";
+		for (const auto& state : transitionList.second)
+			os << state << ' ';
+		os << "}\n";
+	}
+}
+
 // Citirea automatului dintr-un fisier
 void LambdaFiniteAutomaton::ReadAutomaton(std::istream& is)
 {

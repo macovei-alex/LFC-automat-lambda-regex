@@ -13,6 +13,7 @@ class LambdaFiniteAutomaton
 public:
 	bool VerifyAutomaton() const;
 	void PrintAutomaton(std::ostream& os = std::cout) const;
+	void PrintAutomatonDebugForm(std::ostream& os = std::cout) const;
 	void ReadAutomaton(std::istream& is = std::cin);
 	void ReadAutomaton(const std::string& fileName);
 	bool operator!() const;
