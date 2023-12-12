@@ -189,10 +189,14 @@ void LambdaFiniteAutomaton::Concatenate(LambdaFiniteAutomaton& other)
 	// Toate tranzitiile in afara de cele cu starea initiala a lui other
 	Delta.insert(++other.Delta.begin(), other.Delta.end());
 
-	// Tranzitiile cu starea initiala a lui other
+	// Tranzitiile cu starea initiala a lui other si simboluri din alfabet
 	for(const auto& symbol : other.Sigma)
-		for(const auto& state : other.Delta[{other.q0, symbol}])
+		for (const auto& state : other.Delta[{other.q0, symbol}])
 			Delta[{other.q0, symbol}].push_back(state);
+
+	// Tranzitiile cu starea initiala a lui other si lambda
+	for(const auto& state : other.Delta[{other.q0, LAMBDA}])
+		Delta[{other.q0, LAMBDA}].push_back(state);
 
 	Q.insert(other.Q.begin(), other.Q.end());
 

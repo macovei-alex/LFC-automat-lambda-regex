@@ -11,7 +11,7 @@ using DFA = class DeterministicFiniteAutomaton;
 
 int main()
 {
-	LFA lfa = Algorithms::LFAfromRegex("ab(ac|bc)*b(a)*", true);
+	LFA lfa = Algorithms::LFAfromRegex("ab(ac|bc)*b(a)*");
 
 	std::cout << lfa << '\n';
 

@@ -13,7 +13,7 @@ class Algorithms
 
 public:
 	static DFA DFAfromLFA(const LFA& lfa, const bool doPrint = false);
-	static LFA LFAfromRegex(const std::string& regex, bool doPrint = false);
+	static LFA LFAfromRegex(const std::string& regex, bool doPrint = false, std::ostream& os = std::cout);
 
 public:
 	static char concatOp;

@@ -172,27 +172,27 @@ std::string Algorithms::PolishPostfixFromRegex(const std::string& regex)
 	return postfix;
 }
 
-LFA Algorithms::LFAfromRegex(const std::string& regex, bool doPrint)
+LFA Algorithms::LFAfromRegex(const std::string& regex, bool doPrint, std::ostream& os)
 {
 	std::string postfix = PolishPostfixFromRegex(regex);
 	std::stack<LFA*> stack;
 
 	if (doPrint)
-		std::cout << "BEGIN ALGORITHM\n\n";
+		os << "BEGIN ALGORITHM\n\n";
 
 	for (char c : postfix)
 	{
 		if(doPrint)
-			std::cout << "BEGIN ITERATION\n";
+			os << "BEGIN ITERATION\n";
 
 		if (doPrint && !stack.empty())
 		{
-			std::cout << "TOP =\n";
+			os << "TOP =\n";
 			stack.top()->PrintAutomatonDebugForm();
 
 			if (stack.size() >= 2)
 			{
-				std::cout << "NEXT =\n";
+				os << "NEXT =\n";
 				LFA* temp = stack.top();
 				stack.pop();
 				stack.top()->PrintAutomatonDebugForm();
@@ -207,9 +207,9 @@ LFA Algorithms::LFAfromRegex(const std::string& regex, bool doPrint)
 
 			if (doPrint)
 			{
-				std::cout << std::format("Character = [{}]\nNEW =\n", c);
+				os << std::format("Character = [{}]\nNEW =\n", c);
 				newLFA->PrintAutomatonDebugForm();
-				std::cout << "END ITERATION\n\n";
+				os << "END ITERATION\n\n";
 			}
 
 			continue;
@@ -243,14 +243,14 @@ LFA Algorithms::LFAfromRegex(const std::string& regex, bool doPrint)
 
 		if (doPrint)
 		{
-			std::cout << std::format("Character = [{}]\nNEW =\n", c);
+			os << std::format("Character = [{}]\nNEW =\n", c);
 			stack.top()->PrintAutomatonDebugForm();
-			std::cout << "END ITERATION\n\n";
+			os << "END ITERATION\n\n";
 		}
 	}
 
 	if (doPrint)
-		std::cout << "END ALGORITHM\n\n";
+		os << "END ALGORITHM\n\n";
 
 	return *stack.top();
 }
