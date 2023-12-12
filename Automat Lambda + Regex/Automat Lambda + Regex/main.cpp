@@ -8,41 +8,66 @@
 using LFA = class LambdaFiniteAutomaton;
 using DFA = class DeterministicFiniteAutomaton;
 
+enum MenuOption
+{
+	PRINT_DFA = 1,
+	PRINT_REGEX,
+	CHECK_WORD
+};
+
+void PrintMenu()
+{
+	std::cout << "Optiuni:\n";
+	std::cout << '\t' << MenuOption::PRINT_DFA << ". Afiseaza automatul in fluxul stdout si in fisier\n";
+	std::cout << '\t' << MenuOption::PRINT_REGEX << ". Afiseaza expresia regulata in fluxul stdout\n";
+	std::cout << '\t' << MenuOption::CHECK_WORD << ". Verifica daca un cuvant apartine limbajului\n";
+	std::cout << "Introduceti optiunea: ";
+}
+
 int main()
 {
 	std::ifstream fin("regex.in");
+	std::ofstream fout("DFA.out");
 	std::string regex;
+	int option;
+
 	fin >> regex;
+
 	if (!Algorithms::VerifyRegex(regex))
 	{
 		std::cout << "Expresia nu este valida\n";
 		return 0;
 	}
-	LFA lfa = Algorithms::LFAfromRegex(regex);
-
-	std::cout << "LFA:\n" << lfa << '\n';
-	std::cout << "Automat corect: " << std::boolalpha << lfa.VerifyAutomaton() << "\n\n";
 
 	DFA dfa = Algorithms::DFAfromRegex(regex);
 
-	std::cout << "DFA:\n" << dfa << '\n';
-	std::cout << "Automat corect: " << std::boolalpha << dfa.VerifyAutomaton() << "\n\n";
+	while (true)
+	{
+		PrintMenu();
+		std::cin >> option;
 
-	std::cout << std::boolalpha << dfa.CheckWord("abbaa") << '\n';
-	std::cout << std::boolalpha << dfa.CheckWord("abbaaaa") << '\n';
-	std::cout << std::boolalpha << dfa.CheckWord("abaa") << '\n';
-	std::cout << std::boolalpha << dfa.CheckWord("abacbcba") << '\n';
-	std::cout << std::boolalpha << dfa.CheckWord("abbc") << "\n\n";
+		switch (option)
+		{
 
-	dfa = Algorithms::DFAfromLFA(lfa);
-	std::cout << "DFA:\n" << dfa << '\n';
-	std::cout << "Automat corect: " << std::boolalpha << dfa.VerifyAutomaton() << "\n\n";
+		case MenuOption::PRINT_DFA:
+			std::cout << dfa << "\n\n";
+			fout << dfa;
+			fout.close();
+			fout.open("DFA.out");
+			break;
 
-	std::cout << std::boolalpha << dfa.CheckWord("abbaa") << '\n';
-	std::cout << std::boolalpha << dfa.CheckWord("abbaaaa") << '\n';
-	std::cout << std::boolalpha << dfa.CheckWord("abaa") << '\n';
-	std::cout << std::boolalpha << dfa.CheckWord("abacbcba") << '\n';
-	std::cout << std::boolalpha << dfa.CheckWord("abbc") << '\n';
+		case MenuOption::PRINT_REGEX:
+			std::cout << regex << "\n\n";
+			break;
+
+		case MenuOption::CHECK_WORD:
+			std::string word;
+			std::cout << "Introduceti cuvantul: ";
+			std::cin >> word;
+			std::cout << (dfa.CheckWord(word) ? "Cuvantul apartine limbajului\n\n" : "Cuvantul nu apartine limbajului\n\n");
+			break;
+		}
+	}
 
 	return 0;
 }
