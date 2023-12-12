@@ -255,6 +255,11 @@ LFA Algorithms::LFAfromRegex(const std::string& regex, bool doPrint, std::ostrea
 	return *stack.top();
 }
 
+DFA Algorithms::DFAfromRegex(const std::string& regex, bool doPrint, std::ostream& os)
+{
+	return DFAfromLFA(LFAfromRegex(regex, doPrint, os));
+}
+
 std::string Algorithms::RegexFromPolishPostfix(const std::string& postfix)
 {
 	std::stack<std::string> stack;
