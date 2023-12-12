@@ -52,18 +52,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="LFA.in">
-      <Filter>Resource Files</Filter>
-    </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="DFA.in">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="LFAtest1.in">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="LFAtest2.in">
+    <None Include="regex.in">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

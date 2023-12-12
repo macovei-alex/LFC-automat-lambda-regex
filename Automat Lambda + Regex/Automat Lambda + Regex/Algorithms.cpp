@@ -6,6 +6,16 @@
 
 char Algorithms::concatOp = '.';
 
+bool Algorithms::VerifyRegex(const std::string& regex)
+{
+	return true;
+}
+
+DFA Algorithms::DFAfromRegex(const std::string& regex, bool doPrint, std::ostream& os)
+{
+	return DFAfromLFA(LFAfromRegex(regex, doPrint, os));
+}
+
 DFA Algorithms::DFAfromLFA(const LFA& lfa, const bool doPrint)
 {
 	DFA dfa;
@@ -106,72 +116,6 @@ DFA Algorithms::DFAfromLFA(const LFA& lfa, const bool doPrint)
 	return dfa;
 }
 
-std::vector<std::string> Algorithms::DetermineNewStates(const LFA& lfa, const std::vector<std::string>& newStateComponents, char symbol)
-{
-	std::set<std::string> newStates;
-	for (const auto& componentState : newStateComponents)
-	{
-		Transition transition{ componentState, symbol };
-		const auto& it = lfa.GetDelta().find(transition);
-		if (it != lfa.GetDelta().end())
-			newStates.insert(it->second.begin(), it->second.end());
-	}
-
-	std::set<std::string> lambdaEnclosings = lfa.LambdaEnclosings(newStates);
-
-	return { lambdaEnclosings.begin(), lambdaEnclosings.end() };
-}
-
-std::string Algorithms::PolishPostfixFromRegex(const std::string& regex)
-{
-	std::stack<char> operatorStack;
-	std::string postfix;
-	std::string newRegex;
-	if (newRegex.find(concatOp) == std::string::npos)
-		newRegex = InsertConcatenationOperator(regex);
-	else
-		newRegex = regex;
-
-	postfix.reserve(newRegex.size());
-
-	for (char c : newRegex)
-	{
-		if (isalnum(c))
-			postfix += c;
-
-		else if (c == '(')
-			operatorStack.push(c);
-
-		else if (c == ')')
-		{
-			while (!operatorStack.empty() && operatorStack.top() != '(')
-			{
-				postfix += operatorStack.top();
-				operatorStack.pop();
-			}
-			operatorStack.pop(); // Pop the '('
-		}
-
-		else if (IsOperator(c))
-		{
-			while (!operatorStack.empty() && GetPrecedence(operatorStack.top()) >= GetPrecedence(c))
-			{
-				postfix += operatorStack.top();
-				operatorStack.pop();
-			}
-			operatorStack.push(c);
-		}
-	}
-
-	while (!operatorStack.empty())
-	{
-		postfix += operatorStack.top();
-		operatorStack.pop();
-	}
-
-	return postfix;
-}
-
 LFA Algorithms::LFAfromRegex(const std::string& regex, bool doPrint, std::ostream& os)
 {
 	std::string postfix = PolishPostfixFromRegex(regex);
@@ -182,7 +126,7 @@ LFA Algorithms::LFAfromRegex(const std::string& regex, bool doPrint, std::ostrea
 
 	for (char c : postfix)
 	{
-		if(doPrint)
+		if (doPrint)
 			os << "BEGIN ITERATION\n";
 
 		if (doPrint && !stack.empty())
@@ -255,9 +199,54 @@ LFA Algorithms::LFAfromRegex(const std::string& regex, bool doPrint, std::ostrea
 	return *stack.top();
 }
 
-DFA Algorithms::DFAfromRegex(const std::string& regex, bool doPrint, std::ostream& os)
+std::string Algorithms::PolishPostfixFromRegex(const std::string& regex)
 {
-	return DFAfromLFA(LFAfromRegex(regex, doPrint, os));
+	std::stack<char> operatorStack;
+	std::string postfix;
+	std::string newRegex;
+	if (newRegex.find(concatOp) == std::string::npos)
+		newRegex = InsertConcatenationOperator(regex);
+	else
+		newRegex = regex;
+
+	postfix.reserve(newRegex.size());
+
+	for (char c : newRegex)
+	{
+		if (isalnum(c))
+			postfix += c;
+
+		else if (c == '(')
+			operatorStack.push(c);
+
+		else if (c == ')')
+		{
+			while (!operatorStack.empty() && operatorStack.top() != '(')
+			{
+				postfix += operatorStack.top();
+				operatorStack.pop();
+			}
+			operatorStack.pop(); // Pop the '('
+		}
+
+		else if (IsOperator(c))
+		{
+			while (!operatorStack.empty() && GetPrecedence(operatorStack.top()) >= GetPrecedence(c))
+			{
+				postfix += operatorStack.top();
+				operatorStack.pop();
+			}
+			operatorStack.push(c);
+		}
+	}
+
+	while (!operatorStack.empty())
+	{
+		postfix += operatorStack.top();
+		operatorStack.pop();
+	}
+
+	return postfix;
 }
 
 std::string Algorithms::RegexFromPolishPostfix(const std::string& postfix)
@@ -344,4 +333,20 @@ int Algorithms::GetPrecedence(char c)
 	if (c == concatOp) return 2;
 	if (c == '*') return 3;
 	return 0;
+}
+
+std::vector<std::string> Algorithms::DetermineNewStates(const LFA& lfa, const std::vector<std::string>& newStateComponents, char symbol)
+{
+	std::set<std::string> newStates;
+	for (const auto& componentState : newStateComponents)
+	{
+		Transition transition{ componentState, symbol };
+		const auto& it = lfa.GetDelta().find(transition);
+		if (it != lfa.GetDelta().end())
+			newStates.insert(it->second.begin(), it->second.end());
+	}
+
+	std::set<std::string> lambdaEnclosings = lfa.LambdaEnclosings(newStates);
+
+	return { lambdaEnclosings.begin(), lambdaEnclosings.end() };
 }

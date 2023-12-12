@@ -10,13 +10,20 @@ using DFA = class DeterministicFiniteAutomaton;
 
 int main()
 {
-	const std::string regexStr = "ab(ac|bc)*b(a)*";
-	LFA lfa = Algorithms::LFAfromRegex(regexStr);
+	std::ifstream fin("regex.in");
+	std::string regex;
+	fin >> regex;
+	if (!Algorithms::VerifyRegex(regex))
+	{
+		std::cout << "Expresia nu este valida\n";
+		return 0;
+	}
+	LFA lfa = Algorithms::LFAfromRegex(regex);
 
 	std::cout << "LFA:\n" << lfa << '\n';
 	std::cout << "Automat corect: " << std::boolalpha << lfa.VerifyAutomaton() << "\n\n";
 
-	DFA dfa = Algorithms::DFAfromRegex(regexStr);
+	DFA dfa = Algorithms::DFAfromRegex(regex);
 
 	std::cout << "DFA:\n" << dfa << '\n';
 	std::cout << "Automat corect: " << std::boolalpha << dfa.VerifyAutomaton() << "\n\n";

@@ -137,9 +137,6 @@
     <ClCompile Include="LambdaFiniteAutomaton.cpp" />
     <ClCompile Include="Transition.cpp" />
     <ClCompile Include="Utils.cpp" />
-    <Text Include="LFA.in">
-      <FileType>Document</FileType>
-    </Text>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithms.h" />
@@ -149,9 +146,7 @@
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="DFA.in" />
-    <None Include="LFAtest1.in" />
-    <None Include="LFAtest2.in" />
+    <None Include="regex.in" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
