@@ -145,11 +145,11 @@ void DeterministicFiniteAutomaton::ReadAutomaton(const std::string& fileName)
 	ReadAutomaton(fin);
 }
 
-bool DeterministicFiniteAutomaton::operator!() const
+DeterministicFiniteAutomaton::operator bool() const
 {
 	if (Q.empty() || Sigma.empty() || q0.empty() || F.empty() || Delta.empty())
-		return true;
-	return false;
+		return false;
+	return true;
 }
 
 std::ostream& operator<<(std::ostream& os, const DeterministicFiniteAutomaton& automaton)

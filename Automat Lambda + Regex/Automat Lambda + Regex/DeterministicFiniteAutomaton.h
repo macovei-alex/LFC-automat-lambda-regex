@@ -18,7 +18,7 @@ public:
 public:
 	void ReadAutomaton(std::istream& is = std::cin);
 	void ReadAutomaton(const std::string& fileName);
-	bool operator!() const;
+	explicit operator bool() const;
 
 public:
 	DeterministicFiniteAutomaton() = default;
