@@ -6,17 +6,14 @@
 
 const char LAMBDA = '$';
 
-// Validarea corectitudinii automatului
 bool LambdaFiniteAutomaton::VerifyAutomaton() const
 {
 	if (Q.empty() || Sigma.empty() || q0.empty() || F.empty() || Delta.empty())
 		return false;
 
-	// Verifica daca F si q0 sunt incluse în Q
 	if (Q.find(F) == Q.end() || Q.find(q0) == Q.end())
 		return false;
 
-	// Verifica daca tranzitiile sunt valide
 	for (const auto& transitionList : Delta)
 	{
 		const Transition& transition = transitionList.first;
@@ -29,7 +26,6 @@ bool LambdaFiniteAutomaton::VerifyAutomaton() const
 				return false;
 	}
 
-	// Exista minim 1 tranzitie care contine starea intiaiala
 	bool transitionWithS = false;
 	for (const char& caracter : Sigma)
 		if (Delta.find({ q0, caracter }) != Delta.end())
@@ -77,13 +73,11 @@ void LambdaFiniteAutomaton::PrintAutomatonDebugForm(std::ostream& os) const
 	}
 }
 
-// Citirea automatului dintr-un fisier
 void LambdaFiniteAutomaton::ReadAutomaton(std::istream& is)
 {
 	int n;
 	is >> n;
 
-	// Citirea starilor (Q)
 	for (int i = 0; i < n; i++)
 	{
 		std::string str;
@@ -93,7 +87,6 @@ void LambdaFiniteAutomaton::ReadAutomaton(std::istream& is)
 
 	is >> n;
 
-	// Citirea alfabetului (Sigma)
 	for (int i = 0; i < n; i++)
 	{
 		char symbol;
@@ -101,7 +94,6 @@ void LambdaFiniteAutomaton::ReadAutomaton(std::istream& is)
 		Sigma.insert(symbol);
 	}
 
-	// Citirea tranzitiilor (Delta)
 	is >> n;
 	for (int i = 0; i < n; i++)
 	{
@@ -112,10 +104,8 @@ void LambdaFiniteAutomaton::ReadAutomaton(std::istream& is)
 		Delta[transition].push_back(newState);
 	}
 
-	// Citirea starii initiale (q0)
 	is >> q0;
 
-	// Citirea starii finale (F)
 	is >> F;
 }
 
@@ -186,15 +176,12 @@ void LambdaFiniteAutomaton::Concatenate(LambdaFiniteAutomaton& other)
 {
 	other.OffsetStatesIndeces(Q.size() - 1);
 
-	// Toate tranzitiile in afara de cele cu starea initiala a lui other
 	Delta.insert(++other.Delta.begin(), other.Delta.end());
 
-	// Tranzitiile cu starea initiala a lui other si simboluri din alfabet
 	for(const auto& symbol : other.Sigma)
 		for (const auto& state : other.Delta[{other.q0, symbol}])
 			Delta[{other.q0, symbol}].push_back(state);
 
-	// Tranzitiile cu starea initiala a lui other si lambda
 	for(const auto& state : other.Delta[{other.q0, LAMBDA}])
 		Delta[{other.q0, LAMBDA}].push_back(state);
 
@@ -315,7 +302,6 @@ std::istream& operator>>(std::istream& is, LambdaFiniteAutomaton& automaton)
 	return is;
 }
 
-// Obtinerea multimii starilor (Q)
 const std::set<std::string, Utils::StateComparator>& LambdaFiniteAutomaton::GetQ() const
 {
 	return this->Q;

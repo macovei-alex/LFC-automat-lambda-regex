@@ -4,22 +4,18 @@
 #include <format>
 #include <algorithm>
 
-// Validarea corectitudinii automatului
 bool DeterministicFiniteAutomaton::VerifyAutomaton() const
 {
 	if (Q.empty() || Sigma.empty() || q0.empty() || F.empty() || Delta.empty())
 		return false;
 
-	// Verifica daca q0este inclusa in Q
 	if (Q.find(q0) == Q.end())
 		return false;
 
-	// Verifica daca F este inclusa in Q
 	for (const auto& state : F)
 		if (Q.find(state) == Q.end())
 			return false;
 
-	// Verifica daca tranzitiile sunt valide
 	for (const auto& transitionProduction : Delta)
 	{
 		const Transition& transition = transitionProduction.first;
@@ -31,7 +27,6 @@ bool DeterministicFiniteAutomaton::VerifyAutomaton() const
 			return false;
 	}
 
-	// Exista minim 1 tranzitie care contine starea intiaiala
 	bool transitionWithS = false;
 	for (const char& caracter : Sigma)
 		if (Delta.find({ q0, caracter }) != Delta.end())
@@ -90,13 +85,11 @@ bool DeterministicFiniteAutomaton::CheckWord(const std::string& word) const
 	return true;
 }
 
-// Citirea automatului dintr-un fisier
 void DeterministicFiniteAutomaton::ReadAutomaton(std::istream& is)
 {
 	int n;
 	is >> n;
 
-	// Citirea starilor (Q)
 	for (int i = 0; i < n; i++)
 	{
 		std::string state;
@@ -106,7 +99,6 @@ void DeterministicFiniteAutomaton::ReadAutomaton(std::istream& is)
 
 	is >> n;
 
-	// Citirea alfabetului (Sigma)
 	for (int i = 0; i < n; i++)
 	{
 		char symbol;
@@ -114,7 +106,6 @@ void DeterministicFiniteAutomaton::ReadAutomaton(std::istream& is)
 		Sigma.insert(symbol);
 	}
 
-	// Citirea tranzitiilor (Delta)
 	is >> n;
 	for (int i = 0; i < n; i++)
 	{
@@ -125,12 +116,10 @@ void DeterministicFiniteAutomaton::ReadAutomaton(std::istream& is)
 		Delta[transition] = newState;
 	}
 
-	// Citirea starii initiale (q0)
 	is >> q0;
 
 	is >> n;
 
-	// Citirea starii finale (F)
 	for (size_t i = 0; i < n; i++)
 	{
 		std::string state;
