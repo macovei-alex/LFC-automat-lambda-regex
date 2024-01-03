@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <format>
 
 #include "LambdaFiniteAutomaton.h"
 #include "DeterministicFiniteAutomaton.h"
@@ -24,14 +25,45 @@ void PrintMenu()
 	std::cout << "Introduceti optiunea: ";
 }
 
+void TestRegexValidation(std::ifstream& testIn)
+{
+	int counter = 1;
+	while(!testIn.eof())
+	{
+		std::string regex;
+		int rightAnswer;
+
+		testIn >> regex;
+		testIn >> rightAnswer;
+
+		if (Algorithms::VerifyRegex(regex) != rightAnswer)
+		{
+			std::cout << std::format("Testul {} nu a trecut\n", counter);
+			Algorithms::VerifyRegex(regex);
+		}
+
+		counter++;
+	}
+}
+
 int main()
 {
+	std::ifstream testIn("regexTest.in");
+	TestRegexValidation(testIn);
+
 	std::ifstream fin("regex.in");
 	std::ofstream fout("DFA.out");
 	std::string regex;
 	int option;
 
 	fin >> regex;
+	if(Algorithms::VerifyRegex(regex))
+		std::cout << "Expresia este valida\n\n";
+	else
+	{
+		std::cout << "Expresia nu este valida\n";
+		return 0;
+	}
 
 	if (!Algorithms::VerifyRegex(regex))
 	{

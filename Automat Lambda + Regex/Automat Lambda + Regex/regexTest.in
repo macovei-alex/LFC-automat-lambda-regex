@@ -1,0 +1,14 @@
+ab(ac|bc)*b(a)* 1
+a(b|c)* 1
+(a|b)*.c 1
+(a.b)|c* 1
+a*(b|c) 1
+(a|b|c)* 1
+a**b 0
+a|*b 0
+a|b|*c 0
+(a||b) 0
+a(b|c 0
+a|b|c| 0
+(a|b)* 1
+()*abc|d 0

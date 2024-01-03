@@ -8,7 +8,65 @@ char Algorithms::concatOp = '.';
 
 bool Algorithms::VerifyRegex(const std::string& regex)
 {
-	return true;
+	std::string reg = InsertConcatenationOperator(regex);
+	int parenthesisCount = 0;
+
+	for (size_t i = 0; i < reg.size(); i++)
+	{
+		char c = reg[i];
+
+		if (c == '(')
+		{
+			parenthesisCount++;
+		}
+
+		else if (c == ')')
+		{
+			parenthesisCount--;
+			if (parenthesisCount < 0)
+				return false;
+		}
+
+		else if (!isalpha(c) && !IsOperator(c))
+		{
+			return false;
+		}
+
+		else if (c == '*')
+		{
+			if (i == 0)
+				return false;
+
+			else if (reg[i - 1] == '*')
+				return false;
+
+			else if (i >= 2 && reg[i - 2] == '(' && reg[i - 1] == ')')
+				return false;
+		}
+
+		else if (c == concatOp || c == '|')
+		{
+			if (i == 0 || i == reg.size() - 1)
+				return false;
+
+			else if (reg[i - 1] == '(' || reg[i - 1] == concatOp || reg[i - 1] == '|')
+				return false;
+
+			else if (reg[i + 1] == ')' || IsOperator(reg[i + 1]))
+				return false;
+		}
+
+		else if (isalpha(c))
+		{
+			if (i > 0 && isalpha(reg[i - 1]))
+				return false;
+
+			else if (i < reg.size() - 1 && isalpha(reg[i + 1]))
+				return false;
+		}
+	}
+
+	return parenthesisCount == 0;
 }
 
 DFA Algorithms::DFAfromRegex(const std::string& regex, bool doPrint, std::ostream& os)
@@ -203,11 +261,7 @@ std::string Algorithms::PolishPostfixFromRegex(const std::string& regex)
 {
 	std::stack<char> operatorStack;
 	std::string postfix;
-	std::string newRegex;
-	if (newRegex.find(concatOp) == std::string::npos)
-		newRegex = InsertConcatenationOperator(regex);
-	else
-		newRegex = regex;
+	std::string newRegex = InsertConcatenationOperator(regex);
 
 	postfix.reserve(newRegex.size());
 
@@ -226,7 +280,7 @@ std::string Algorithms::PolishPostfixFromRegex(const std::string& regex)
 				postfix += operatorStack.top();
 				operatorStack.pop();
 			}
-			operatorStack.pop(); // Pop the '('
+			operatorStack.pop();
 		}
 
 		else if (IsOperator(c))
@@ -286,25 +340,26 @@ std::string Algorithms::RegexFromPolishPostfix(const std::string& postfix)
 
 std::string Algorithms::InsertConcatenationOperator(const std::string& regex)
 {
-	std::string newRegex;
-	newRegex.reserve(regex.size() * 2);
+	std::string newRegex = RemoveConcatenationOperator(regex);
+	std::string ret;
+	ret.reserve(regex.size() * 2);
 
-	for (size_t i = 0; i < regex.size() - 1; i++)
+	for (size_t i = 0; i < newRegex.size() - 1; i++)
 	{
-		newRegex += regex[i];
+		ret += newRegex[i];
 
-		if (regex[i] == '(' || regex[i] == '|')
+		if (newRegex[i] == '(' || newRegex[i] == '|')
 			continue;
 
-		if (regex[i + 1] == '*' || regex[i + 1] == ')' || regex[i + 1] == '|')
+		if (newRegex[i + 1] == '*' || newRegex[i + 1] == ')' || newRegex[i + 1] == '|')
 			continue;
 
-		newRegex += concatOp;
+		ret += concatOp;
 	}
 
-	newRegex += regex.back();
+	ret += newRegex.back();
 
-	return newRegex;
+	return ret;
 }
 
 std::string Algorithms::RemoveConcatenationOperator(const std::string& regex)
@@ -313,11 +368,8 @@ std::string Algorithms::RemoveConcatenationOperator(const std::string& regex)
 	newRegex.reserve(regex.size());
 
 	for (size_t i = 0; i < regex.size(); i++)
-	{
-		if (regex[i] == concatOp)
-			continue;
-		newRegex += regex[i];
-	}
+		if (regex[i] != concatOp)
+			newRegex += regex[i];
 
 	return newRegex;
 }
